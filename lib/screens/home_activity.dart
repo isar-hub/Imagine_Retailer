@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imagine_retailer/config/constants.dart';
 import 'package:imagine_retailer/generated/assets.dart';
-import 'package:imagine_retailer/scanner/scanner.dart';
 import 'package:imagine_retailer/screens/settings.dart';
 
+import '../scanner/mlkit_scanner/barcode_scanner.dart';
 import 'dashboard.dart';
 
 class HomeActivity extends StatefulWidget {
-   HomeActivity({super.key});
+   const HomeActivity({super.key});
 
   @override
   State<HomeActivity> createState() => _HomeActivityState();
@@ -24,8 +23,8 @@ class _HomeActivityState extends State<HomeActivity> {
    }
 
   List<Widget> pages =  [
-    DashboardPage(),
-    SettingsPage()
+    const DashboardPage(),
+    const SettingsPage()
 
   ];
 
@@ -45,7 +44,7 @@ class _HomeActivityState extends State<HomeActivity> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ScannerActivity(),
+                builder: (context) => const BarcodeScannerView(),
               ),
             );
           },
@@ -68,14 +67,14 @@ class _HomeActivityState extends State<HomeActivity> {
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Container(
-                padding: EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   
                   shape: BoxShape.circle,
                   color: ImagineColors.red,
 
                 ),
-                child: Icon(Icons.notifications_none,color: Colors.white,),
+                child: const Icon(Icons.notifications_none,color: Colors.white,),
               ),
             )
 

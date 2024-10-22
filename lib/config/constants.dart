@@ -30,8 +30,8 @@ class ImagineTheme {
   static const BottomAppBarTheme bottomAppBarTheme = BottomAppBarTheme(
     color: Colors.black,
     height: 60,
-    padding: const EdgeInsets.symmetric(horizontal: 10),
-    shape: const CircularNotchedRectangle(),
+    padding: EdgeInsets.symmetric(horizontal: 10),
+    shape: CircularNotchedRectangle(),
   );
   static const AppBarTheme appBarTheme = AppBarTheme(color: Colors.black);
   static const ColorScheme lightColorScheme = ColorScheme(
