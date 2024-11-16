@@ -32,9 +32,6 @@ class _HomeActivityState extends State<HomeActivity> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-
-
-
         body: pages[_selectedIndex],
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,

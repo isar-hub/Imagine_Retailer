@@ -1,4 +1,5 @@
   import 'dart:io';
+import 'dart:ui';
   import 'package:camera/camera.dart';
   import 'package:flutter/material.dart';
   import 'package:flutter/services.dart';
@@ -85,7 +86,7 @@
 
     @override
     Widget build(BuildContext context) {
-      return Scaffold(body: _liveFeedBody());
+      return Scaffold(body: _liveFeedBody(),backgroundColor: Colors.black.withOpacity(0.1),);
     }
 
     Widget _liveFeedBody() {
@@ -93,7 +94,7 @@
       if (_controller == null) return Container();
       if (_controller?.value.isInitialized == false) return Container();
       return ColoredBox(
-        color: Colors.black,
+        color: Colors.transparent,
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -107,6 +108,7 @@
                 child: widget.customPaint,
               ),
             ),
+
             _backButton(),
             _switchLiveCameraToggle(),
             _detectionViewModeToggle(),
@@ -126,7 +128,7 @@
         child: FloatingActionButton(
           heroTag: Object(),
           onPressed: () => Navigator.of(context).pop(),
-          backgroundColor: Colors.black54,
+          backgroundColor: Colors.transparent,
           child: const Icon(
             Icons.arrow_back_ios_outlined,
             size: 20,
@@ -144,7 +146,7 @@
         child: FloatingActionButton(
           heroTag: Object(),
           onPressed: widget.onDetectorViewModeChanged,
-          backgroundColor: Colors.black54,
+          backgroundColor: Colors.transparent,
           child: const Icon(
             Icons.photo_library_outlined,
             size: 25,
@@ -162,7 +164,7 @@
         child: FloatingActionButton(
           heroTag: Object(),
           onPressed: _switchLiveCamera,
-          backgroundColor: Colors.black54,
+          backgroundColor: Colors.transparent,
           child: Icon(
             Platform.isIOS
                 ? Icons.flip_camera_ios_outlined
@@ -233,7 +235,7 @@
           Container(
             width: 55,
             decoration: BoxDecoration(
-              color: Colors.black54,
+              color: Colors.black.withOpacity(0.6),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(

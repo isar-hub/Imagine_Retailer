@@ -8,11 +8,13 @@ abstract class Routes {
   static const SETTINGS = _Paths.SETTINGS;
   static const WARRANTY = _Paths.WARRANTY;
   static const NOTIFICATION = _Paths.NOTIFICATION;
+  static const LOGIN = _Paths.LOGIN;
 
 }
 
 abstract class _Paths {
   _Paths._();
+  static const LOGIN = '/login';
   static const HOME = '/dashboard';
   static const SCANNER = '/scanner';
   static const USER = '/user';

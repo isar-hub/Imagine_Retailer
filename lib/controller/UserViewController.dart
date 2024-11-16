@@ -69,9 +69,4 @@ class UserViewController extends GetxController{
 
   var state = 'State'.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-
-  }
 }

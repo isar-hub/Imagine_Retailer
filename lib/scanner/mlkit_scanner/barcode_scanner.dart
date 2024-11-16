@@ -62,10 +62,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
         // Draw detected barcodes
         final painter = BarcodeDetectorPainter(
-          barcodes,
-          inputImage.metadata!.size,
-          inputImage.metadata!.rotation,
-          _cameraLensDirection,
+          context
         );
         _customPaint = CustomPaint(painter: painter);
         log("Barcode Found: $barcodes");

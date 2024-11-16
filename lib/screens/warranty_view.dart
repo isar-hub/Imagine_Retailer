@@ -1,9 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:imagine_retailer/screens/user_view.dart';
-
 import '../config/constants.dart';
 import '../generated/assets.dart';
 
@@ -40,7 +38,7 @@ class WarrantyView extends StatelessWidget {
                     children: [
                       buidPhoneDetailse('1','isar'),
                       buildForm(context),
-                      SizedBox(height: 80,)
+                      const SizedBox(height: 80,)
                     ],
                   ),
                 ),
@@ -51,7 +49,7 @@ class WarrantyView extends StatelessWidget {
                   right: 0,
                   child: Container(
                     color: ImagineColors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 5),
                     child:
 
 

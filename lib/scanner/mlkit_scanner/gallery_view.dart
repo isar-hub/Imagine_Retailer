@@ -77,22 +77,21 @@ class _GalleryViewState extends State<GalleryView> {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          onPressed: _getImageAsset,
-          child: const Text('From Assets'),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ElevatedButton(
-          child: const Text('From Gallery'),
           onPressed: () => _getImage(ImageSource.gallery),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+          ),
+          child: const Text('From Gallery',style: TextStyle(color: Colors.white),),
         ),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: const Text('Take a picture'),
           onPressed: () => _getImage(ImageSource.camera),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+          ),
+          child: const Text('Take a picture',style: TextStyle(color: Colors.white)),
         ),
       ),
       if (_image != null)

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/config/constants.dart';
 import 'package:imagine_retailer/routes/app_pages.dart';
-import 'package:imagine_retailer/screens/home_activity.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,7 +11,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: "Imagine",
       theme: ImagineTheme.themeData(context),
-      initialRoute: AppPages.HOME,
+      initialRoute: AppPages.LOGIN ,
       getPages: AppPages.routes,
     );
   }

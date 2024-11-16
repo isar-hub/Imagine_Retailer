@@ -1,156 +1,44 @@
 import 'dart:io';
 import 'dart:ui';
 import 'dart:ui' as ui;
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(
-      this.barcodes,
-      this.imageSize,
-      this.rotation,
-      this.cameraLensDirection,
-      );
+    this.context,
+  );
 
-  final List<Barcode> barcodes;
-  final Size imageSize;
-  final InputImageRotation rotation;
-  final CameraLensDirection cameraLensDirection;
+  final BuildContext context;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.lightGreenAccent;
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    final paint = Paint();
+    paint.imageFilter = ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0);
 
-    final Paint background = Paint()..color = Color(0x99000000);
+    paint.color = Colors.black.withOpacity(0.6);
 
-    for (final Barcode barcode in barcodes) {
-      final ParagraphBuilder builder = ParagraphBuilder(
-        ParagraphStyle(
-            textAlign: TextAlign.left,
-            fontSize: 16,
-            textDirection: TextDirection.ltr),
-      );
-      builder.pushStyle(
-          ui.TextStyle(color: Colors.lightGreenAccent, background: background));
-      builder.addText('${barcode.displayValue}');
-      builder.pop();
-
-      final left = translateX(
-        barcode.boundingBox.left,
-        size,
-        imageSize,
-        rotation,
-        cameraLensDirection,
-      );
-      final top = translateY(
-        barcode.boundingBox.top,
-        size,
-        imageSize,
-        rotation,
-        cameraLensDirection,
-      );
-      final right = translateX(
-        barcode.boundingBox.right,
-        size,
-        imageSize,
-        rotation,
-        cameraLensDirection,
-      );
-
-      final List<Offset> cornerPoints = <Offset>[];
-      for (final point in barcode.cornerPoints) {
-        final double x = translateX(
-          point.x.toDouble(),
-          size,
-          imageSize,
-          rotation,
-          cameraLensDirection,
-        );
-        final double y = translateY(
-          point.y.toDouble(),
-          size,
-          imageSize,
-          rotation,
-          cameraLensDirection,
-        );
-
-        cornerPoints.add(Offset(x, y));
-      }
-
-      // Add the first point to close the polygon
-      cornerPoints.add(cornerPoints.first);
-      canvas.drawPoints(PointMode.polygon, cornerPoints, paint);
-
-      canvas.drawParagraph(
-        builder.build()
-          ..layout(ParagraphConstraints(
-            width: (right - left).abs(),
-          )),
-        Offset(
-            Platform.isAndroid &&
-                cameraLensDirection == CameraLensDirection.front
-                ? right
-                : left,
-            top),
-      );
-    }
+    canvas.drawPath(
+      Path.combine(
+        PathOperation.difference,
+        Path()
+          ..addRRect(RRect.fromLTRBR(0, 0, width, height, Radius.circular(0))),
+        Path()
+          ..addRect(Rect.fromLTRB(
+              10, (height / 2) - 170, width - 10, (height / 2) + 50))
+          ..close(),
+      ),
+      paint,
+    );
   }
 
   @override
   bool shouldRepaint(BarcodeDetectorPainter oldDelegate) {
-    return oldDelegate.imageSize != imageSize ||
-        oldDelegate.barcodes != barcodes;
+    return false;
   }
 }
 
-double translateX(
-    double x,
-    Size canvasSize,
-    Size imageSize,
-    InputImageRotation rotation,
-    CameraLensDirection cameraLensDirection,
-    ) {
-  switch (rotation) {
-    case InputImageRotation.rotation90deg:
-      return x *
-          canvasSize.width /
-          (Platform.isIOS ? imageSize.width : imageSize.height);
-    case InputImageRotation.rotation270deg:
-      return canvasSize.width -
-          x *
-              canvasSize.width /
-              (Platform.isIOS ? imageSize.width : imageSize.height);
-    case InputImageRotation.rotation0deg:
-    case InputImageRotation.rotation180deg:
-      switch (cameraLensDirection) {
-        case CameraLensDirection.back:
-          return x * canvasSize.width / imageSize.width;
-        default:
-          return canvasSize.width - x * canvasSize.width / imageSize.width;
-      }
-  }
-}
 
-double translateY(
-    double y,
-    Size canvasSize,
-    Size imageSize,
-    InputImageRotation rotation,
-    CameraLensDirection cameraLensDirection,
-    ) {
-  switch (rotation) {
-    case InputImageRotation.rotation90deg:
-    case InputImageRotation.rotation270deg:
-      return y *
-          canvasSize.height /
-          (Platform.isIOS ? imageSize.height : imageSize.width);
-    case InputImageRotation.rotation0deg:
-    case InputImageRotation.rotation180deg:
-      return y * canvasSize.height / imageSize.height;
-  }
-}

@@ -50,7 +50,7 @@ class UserView extends GetView<UserViewController> {
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 children: [
-                  buidPhoneDetailse(name!, quantity!),
+                  buidPhoneDetailse(name, quantity),
                   buildCustomerDetails(context),
                   SizedBox(height: 80,)
                 ],

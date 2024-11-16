@@ -1,8 +1,12 @@
 
 
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
+import 'package:imagine_retailer/screens/login_screen.dart';
 
 import '../scanner/mlkit_scanner/barcode_scanner.dart';
 import '../screens/home_activity.dart';
@@ -18,6 +22,8 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
+
+  static const LOGIN = Routes.LOGIN;
   static const HOME = Routes.HOME;
   static var SCANNER = Routes.SCANNER;
   static const USER = Routes.USER;
@@ -27,6 +33,12 @@ class AppPages {
 
 
   static final routes = [
+    GetPage(
+        name: _Paths.LOGIN,
+        page: ()=>  LoginScreen()
+    ),
+
+
     GetPage(
       name: _Paths.HOME,
       page: () => const HomeActivity(),
@@ -44,7 +56,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SETTINGS,
-      page: () => const SettingsPage(),
+      page: () =>  SettingsPage(),
 
     ),
     GetPage(

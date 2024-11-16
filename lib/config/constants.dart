@@ -9,7 +9,7 @@ class ImagineTheme {
       bottomAppBarTheme: bottomAppBarTheme,
       bottomNavigationBarTheme: bottomNavigationBarTheme,
         scaffoldBackgroundColor: ImagineColors.red,
-      iconTheme: IconThemeData(color: Colors.white)
+      iconTheme: const IconThemeData(color: Colors.white)
 
 
     );
@@ -22,7 +22,7 @@ class ImagineTheme {
       selectedItemColor: Colors.white,
     unselectedItemColor: Colors.white.withOpacity(0.5),
 
-    selectedLabelStyle: TextStyle(color: Colors.white),
+    selectedLabelStyle: const TextStyle(color: Colors.white),
       unselectedLabelStyle: TextStyle(color: Colors.white.withOpacity(0.5))
 
   );

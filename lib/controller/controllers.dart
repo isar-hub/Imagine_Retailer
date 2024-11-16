@@ -14,7 +14,7 @@ class BarCodeController extends GetxController{
 
   @override
   void onInit() {
-    super.onClose();
+    super.onInit();
     quantityController = TextEditingController();
   }
   @override

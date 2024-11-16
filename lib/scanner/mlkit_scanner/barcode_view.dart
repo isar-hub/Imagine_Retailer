@@ -73,7 +73,7 @@ class BarcodeView extends GetView<BarCodeController> {
                ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Obx(
@@ -89,17 +89,17 @@ class BarcodeView extends GetView<BarCodeController> {
                      );
                    }
                        : null,
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: ImagineColors.red,
+                     shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                   ),
                    child: Text(
                      'Done',
                      style: TextStyle(
                        color: ImagineColors.white,
                        fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                   style: ElevatedButton.styleFrom(
-                     backgroundColor: ImagineColors.red,
-                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(8),
                      ),
                    ),
                  );
