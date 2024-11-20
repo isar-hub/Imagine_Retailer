@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/screens/widgets/btn_getStarted.dart';
 import 'package:imagine_retailer/screens/widgets/email_field.dart';
-
-
 import '../controller/LoginController.dart';
 
 class LoginScreen extends GetView<LoginController>{
@@ -32,10 +28,10 @@ class LoginScreen extends GetView<LoginController>{
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.flutter_dash,
+                        const Icon(Icons.flutter_dash,
                             size: 60, color: Colors.white70),
-                        SizedBox(height: 25),
-                        Text(
+                        const SizedBox(height: 25),
+                        const Text(
                           "Welcome,",
                           style: TextStyle(
                               color: Colors.white, fontSize: 35),
@@ -50,19 +46,19 @@ class LoginScreen extends GetView<LoginController>{
                     ),
                   ),
                 ),
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       EmailField(
                           fadeEmail: controller.elementsOpacity.value == 0,
                           emailController: controller.emailController),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       PasswordField(
                           fadePassword: controller.elementsOpacity.value == 0,
                           passwordController: controller.passwordController),
-                      SizedBox(height: 60),
+                      const SizedBox(height: 60),
                       GetStartedButton(
                         elementsOpacity: controller.elementsOpacity.value,
                         onTap: () {
@@ -71,7 +67,7 @@ class LoginScreen extends GetView<LoginController>{
                         },
                         onAnimatinoEnd: () async {
                           await Future.delayed(
-                              Duration(milliseconds: 500));
+                              const Duration(milliseconds: 500));
                           controller.loadingBallAppear.value = true;
                         },
                       )

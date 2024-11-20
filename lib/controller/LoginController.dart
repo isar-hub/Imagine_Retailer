@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/config/common_methods.dart';
-import 'package:imagine_retailer/routes/app_pages.dart';
 import 'package:imagine_retailer/screens/home_activity.dart';
 
 class LoginController extends GetxController {
@@ -19,9 +18,6 @@ class LoginController extends GetxController {
     super.onInit();
     emailController = TextEditingController();
     passwordController = TextEditingController();
-
-
-
   }
 
   @override
@@ -29,23 +25,21 @@ class LoginController extends GetxController {
     super.onReady();
     isLoggedIn();
   }
-  void isLoggedIn(){
-    if(auth.currentUser != null){
-      Get.to(()=>HomeActivity(), arguments: auth.currentUser);
+
+  void isLoggedIn() {
+    if (auth.currentUser != null) {
+      Get.offAll(() => HomeActivity(), arguments: auth.currentUser);
     }
   }
-
 
   Future<void> userLogin() async {
     var emailAddress = emailController.text.toString();
     var password = passwordController.text.toString();
     try {
-       final credential = await auth.signInWithEmailAndPassword(
-          email: emailAddress,
-          password: password
-      );
-       showSuccess("${credential.user!.email}");
-       Get.off(HomeActivity(), arguments: credential.user);
+      final credential = await auth.signInWithEmailAndPassword(
+          email: emailAddress, password: password);
+      showSuccess("${credential.user!.email}");
+      Get.off(HomeActivity(), arguments: credential.user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showError("Invalid Credentials");
@@ -53,8 +47,7 @@ class LoginController extends GetxController {
       } else if (e.code == 'wrong-password') {
         showError("Wrong password provided for that user.");
         print('Wrong password provided for that user.');
-      }
-      else{
+      } else {
         showError("$e");
       }
     }

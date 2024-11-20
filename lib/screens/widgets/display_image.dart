@@ -15,10 +15,11 @@ class DisplayImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Center(
-        child: buildImage(),);
+      child: CircleAvatar(
+        child: Image.network(imagePath),
+      ),
+    );
   }
 
   // Builds Profile Image
@@ -30,22 +31,9 @@ class DisplayImage extends StatelessWidget {
     return CircleAvatar(
       backgroundColor: Colors.white,
       child: CircleAvatar(
+
         backgroundImage: image as ImageProvider,
       ),
     );
   }
-
-  // Builds Edit Icon on Profile Picture
-
-  // Builds/Makes Circle for Edit Icon on Profile Picture
-  Widget buildCircle({
-    required Widget child,
-    required double all,
-  }) =>
-      ClipOval(
-          child: Container(
-            padding: EdgeInsets.all(all),
-            color: Colors.white,
-            child: child,
-          ));
 }

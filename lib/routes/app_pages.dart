@@ -41,7 +41,7 @@ class AppPages {
 
     GetPage(
       name: _Paths.HOME,
-      page: () => const HomeActivity(),
+      page: () =>  HomeActivity(),
     ),
     GetPage(
       name: _Paths.SCANNER,

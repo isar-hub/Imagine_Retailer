@@ -1,131 +1,149 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:imagine_retailer/config/constants.dart';
-import 'package:imagine_retailer/screens/widgets/display_image.dart';
+import 'package:imagine_retailer/screens/widgets/address_picker.dart';
+import 'package:imagine_retailer/screens/widgets/common_text_field.dart';
+import 'package:imagine_retailer/screens/widgets/email_field.dart';
 
 import '../controller/SettingsController.dart';
+import '../models/Users.dart';
 
-class EditProfile extends StatelessWidget{
+class EditProfile extends StatelessWidget {
+
+  final Users user;
+  const EditProfile({super.key, required this.user});
+
   @override
   Widget build(BuildContext context) {
-
     final controller = Get.put(SettingsController());
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                      child: DisplayImage(
-                        imagePath: controller.user.value!.photoURL ?? "https://avatar.iran.liara.run/username?username=${controller.user.value?.displayName!}",
-                        onPressed: () {},
-                      ),
-                    )
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.black),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 50),
 
-              // -- Form Fields
-              Form(
-                child: Column(
+    // Controllers for form fields
+    final nameController = TextEditingController(text: user.name);
+    final emailController = TextEditingController(text: user.email);
+    final mobileController = TextEditingController(text: user.mobile);
+    final companyNameController = TextEditingController(text: user.companyName);
+    final gstController = TextEditingController(text: user.gstNumber);
+    final addressController = TextEditingController(text: user.address);
+    final pinCodeController = TextEditingController(text: user.pinCode.toString());
+    final passWordController = TextEditingController(text: user.password);
+    final cnfrmPasswordController = TextEditingController(text: user.password);
+
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Stack(
                   children: [
-                    TextFormField(
-                      decoration:  InputDecoration(
-                          label: Text(controller.user.value!.displayName!), prefixIcon: Icon(Icons.person)),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      decoration:  InputDecoration(
-                          label: Text(controller.user.value!.email!), prefixIcon: Icon(Icons.email_outlined)),
-                    ),
-                    const SizedBox(height:  20),
-                    TextFormField(
-                      decoration:  InputDecoration(
-                          label: Text(controller.user.value!.phoneNumber!), prefixIcon: Icon(Icons.phone)),
-                    ),
-                    const SizedBox(height:  20),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        label: const Text(""),
-                        prefixIcon: const Icon(Icons.fingerprint),
-                        suffixIcon:
-                        IconButton(icon: const Icon(Icons.remove_red_eye_outlined), onPressed: () {}),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // -- Form Submit Button
                     SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: (){},
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: ImagineColors.red,
-                            side: BorderSide.none,
-                            shape: const StadiumBorder()),
-                        child: const Text("tEditProfile", style: TextStyle(color: Colors.white)),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // -- Created Date and Delete Button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text.rich(
-                          TextSpan(
-                            text: "tJoined",
-                            style: TextStyle(fontSize: 12),
-                            children: [
-                              TextSpan(
-                                  text: "tJoinedAt",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
-                            ],
+                      width: 120,
+                      height: 120,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: CircleAvatar(
+                          child: Image.network(
+                            fit: BoxFit.fill,
+                                "https://avatar.iran.liara.run/username?username=${"isar"}",
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent.withOpacity(0.1),
-                              elevation: 0,
-                              foregroundColor: Colors.red,
-                              shape: const StadiumBorder(),
-                              side: BorderSide.none),
-                          child: const Text("tDelete"),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 35,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: Colors.black,
                         ),
-                      ],
-                    )
+                        child: const Icon(Icons.camera_alt,
+                            color: Colors.white, size: 20),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                // Form fields
+                buildTextField("Full Name", nameController, Icons.person_2_outlined),
+                buildTextField("Email", emailController, Icons.email_outlined),
+                buildTextField("Mobile", mobileController, Icons.phone),
+                buildTextField("Company Name", companyNameController,
+                    Icons.home_work_outlined),
+                buildTextField(
+                    "GST Number", gstController, Icons.text_snippet_outlined),
+                Divider(),
+                buildTextField("Username", nameController, Icons.person),
+                buildPassword(passWordController,"Password"),
+                buildPassword(cnfrmPasswordController,"Confirm Password"),
+
+
+                Divider(),
+
+                buildTextField("Address", addressController, Icons.notes_sharp),
+                // buildStateDropdown(controller),
+                buildTextField(
+                  "Pin Code",
+                  pinCodeController,
+                  Icons.pin_drop_outlined,
+                ),
+                AddressPicker(
+                    selectedState: (state) {},
+                    selectedCountry: (selectedCountry) {},
+                    selectedCity: (selectedCity) {}),
+                SizedBox(height: 20,),
+                ElevatedButton(
+                  onPressed: () {
+                    if (controller.validateForm(
+                      name: nameController.text,
+                      email: emailController.text,
+                      mobile: mobileController.text,
+                      companyName: companyNameController.text,
+                      gst: gstController.text,
+                      address: addressController.text,
+                      pinCode: pinCodeController.text,
+                    )) {
+                      // Handle save action here
+                    } else {
+                      Get.snackbar(
+                        "Error",
+                        "Please fill all the fields.",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
+                  },
+                  child: const Text("Save",style: TextStyle(color: Colors.white),),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-
   }
 
+  // Build state dropdown
+
+
+  Widget buildPassword(TextEditingController textController,String hinttext){
+    return Padding(padding: EdgeInsets.symmetric(vertical: 10),
+    child: PasswordField(passwordController: textController, fadePassword: false,iconData: Icons.lock_clock_sharp,hintText: hinttext,),
+    );
+  }
+
+  // Helper method to build text form fields
+  Widget buildTextField(
+      String label, TextEditingController textController, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: CommonTextField(
+        emailController: textController,
+        label: label,
+        iconData: icon,
+      ),
+    );
+  }
 }

@@ -4,12 +4,26 @@ class ImagineTheme {
   static ThemeData themeData(BuildContext ctx) {
     final ThemeData base = ThemeData.dark();
     return base.copyWith(
+
       colorScheme: lightColorScheme,
       appBarTheme: appBarTheme,
       bottomAppBarTheme: bottomAppBarTheme,
       bottomNavigationBarTheme: bottomNavigationBarTheme,
         scaffoldBackgroundColor: ImagineColors.red,
-      iconTheme: const IconThemeData(color: Colors.white)
+      iconTheme: const IconThemeData(color: Colors.white),
+      dialogTheme:  DialogTheme(
+        backgroundColor: ImagineColors.white
+      ),
+      elevatedButtonTheme:  ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          elevation: 5,
+         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+         padding: EdgeInsets.symmetric(horizontal: 50),
+            textStyle: TextStyle(color: Colors.white)
+        ),
+
+      )
 
 
     );
@@ -44,6 +58,7 @@ class ImagineTheme {
     surface: Color(0xFFcf0000),
     onSurface: Color(0xFFFFFFFF),
     brightness: Brightness.dark,
+
   );
 }
 
