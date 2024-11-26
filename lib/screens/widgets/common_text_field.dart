@@ -5,8 +5,9 @@ class CommonTextField extends StatefulWidget {
 
   final String label;
   final IconData iconData;
+  int maxLines = 1;
   Function(String?)? validator;
-   CommonTextField({super.key, required this.emailController,  required this.label, required this.iconData, this.validator});
+   CommonTextField({super.key, required this.emailController,  required this.label, required this.iconData, this.validator,this.maxLines =1});
 
   @override
   State<CommonTextField> createState() => _CommonFieldState();
@@ -62,9 +63,11 @@ class _CommonFieldState extends State<CommonTextField>
                   controller: emailController,
                   focusNode: node,
                   cursorColor: Colors.black,
+                  maxLines: widget.maxLines,
                   decoration: InputDecoration(
                     label: Text(widget.label),
                     prefixIcon: Icon(widget.iconData,color: Colors.black,),
+                    alignLabelWithHint: true,
                     labelStyle: TextStyle(color: Colors.black),
                     hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
                     contentPadding:

@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:imagine_retailer/scanner/mlkit_scanner/barcode_view.dart';
+import 'package:imagine_retailer/scanner/mlkit_scanner/camera_view.dart';
 
 import 'barcode_detector_painter.dart';
 import 'detector_view.dart';
@@ -13,6 +15,7 @@ class BarcodeScannerView extends StatefulWidget {
 
   @override
   State<BarcodeScannerView> createState() => _BarcodeScannerViewState();
+
 }
 
 class _BarcodeScannerViewState extends State<BarcodeScannerView> {
@@ -54,36 +57,34 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
 
     try {
       final barcodes = await _barcodeScanner.processImage(inputImage);
-      if (inputImage.metadata?.size != null && inputImage.metadata?.rotation != null) {
+      if (inputImage.metadata?.size != null &&
+          inputImage.metadata?.rotation != null) {
         if (barcodes.isNotEmpty) {
-          // Process the detected barcode
+          setState(() {
+            isDetected = true;
+          });
           _handleBarcodeDetected(barcodes[0]); // Move barcode handling to a separate method
         }
 
         // Draw detected barcodes
-        final painter = BarcodeDetectorPainter(
-          context
-        );
+        final painter = BarcodeDetectorPainter(context);
         _customPaint = CustomPaint(painter: painter);
         log("Barcode Found: $barcodes");
       } else {
-        _handleNoBarcodeFound(barcodes); // Handle case when no barcode is found
+        _handleNoBarcodeFound(barcodes);
       }
     } catch (e) {
       log("Error processing image: $e"); // Log errors
     } finally {
       _isBusy = false; // Unlock processing
-      if (mounted) {
-        setState(() {}); // Update UI if mounted
-      }
     }
   }
 
   void _handleBarcodeDetected(Barcode barcode) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => BarcodeView(barCode: barcode)),
-    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.off(const BarcodeView(),arguments: barcode.displayValue);
+    });
   }
 
   void _handleNoBarcodeFound(List<Barcode> barcodes) {
@@ -95,6 +96,4 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     log("No Barcode Found: $barcodes");
     _customPaint = null; // Clear custom painter
   }
-
-
 }

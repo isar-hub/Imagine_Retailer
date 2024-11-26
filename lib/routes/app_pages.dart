@@ -49,7 +49,6 @@ class AppPages {
 
     ),
     GetPage(
-      transition: Transition.zoom,
       name: _Paths.USER,
       page: () =>  UserView(),
 

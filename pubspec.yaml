@@ -50,6 +50,8 @@ dependencies:
   csc_picker: ^0.2.7
   syncfusion_flutter_charts: ^27.2.2
   intl: ^0.18.0
+  firebase_storage: ^12.3.6
+  uuid: ^4.5.1
 
 
 dev_dependencies:

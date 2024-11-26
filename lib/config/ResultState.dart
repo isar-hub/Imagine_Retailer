@@ -1,4 +1,4 @@
-enum ResultState { SUCCESS, ERROR, LOADING }
+enum ResultState { SUCCESS, ERROR, LOADING,INITIAL }
 
 class Result<T> {
   final ResultState state;
@@ -13,6 +13,9 @@ class Result<T> {
     return Result( state: ResultState.LOADING);
   }
 
+  factory Result.initial(){
+    return Result(state: ResultState.INITIAL);
+  }
   // Factory method for success state
   factory Result.success(T data) {
     return Result(state: ResultState.SUCCESS, data: data);

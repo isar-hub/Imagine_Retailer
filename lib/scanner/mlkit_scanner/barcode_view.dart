@@ -1,26 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:imagine_retailer/config/ResultState.dart';
 import 'package:imagine_retailer/config/constants.dart';
-import 'package:imagine_retailer/routes/app_pages.dart';
+import 'package:imagine_retailer/screens/warranty_view.dart';
 
 import '../../controller/controllers.dart';
+import '../../models/Product.dart';
+import '../../screens/user_view.dart';
 
 class BarcodeView extends GetView<BarCodeController> {
-  const BarcodeView({super.key, required this.barCode});
-
-  final Barcode barCode;
+  const BarcodeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     Get.lazyPut(() => BarCodeController());
-
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          child: _showPicker(context),
-        ),
+        body: Obx(() {
+          final resultProduct = controller.product.value;
+
+          switch (resultProduct.state) {
+            case ResultState.SUCCESS:
+              final product = resultProduct.data!;
+              if (controller.barCode == product.serialNumber) {
+                final targetView = (product.status == ProductStatus.BILLED)
+                    ? UserView()
+                    : (product.status == ProductStatus.SOLD)
+                        ? WarrantyView()
+                        : null;
+
+                if (targetView != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Get.off(targetView, arguments: product);
+                  });
+                } else {
+                  return const Center(child: Text('Invalid product.'));
+                }
+              } else {
+                return const Center(child: Text('Invalid product.'));
+              }
+              break;
+            case ResultState.ERROR:
+              return Center(
+                child: Text(
+                    'Error retrieving product data. ${resultProduct.message}'),
+              );
+
+            case ResultState.LOADING:
+            case ResultState.INITIAL:
+              return CircularProgressIndicator();
+          }
+
+          return const SizedBox.shrink();
+        }),
       ),
     );
   }
@@ -58,58 +90,44 @@ class BarcodeView extends GetView<BarCodeController> {
             'Enter Quantity',
             style: TextStyle(color: ImagineColors.red),
           ),
-           TextField(
-                 controller: controller.quantityController,
-                 keyboardType: TextInputType.number,
-                 decoration: const InputDecoration(
-                   border: OutlineInputBorder(),
-                   hintText: 'Enter quantity',
-                 ),
-
-                 onChanged: (value) {
-                   controller.quantity.value = value;
-                   controller.validateInput(value);
-                 },
-               ),
+          TextField(
+            controller: controller.quantityController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter quantity',
+            ),
+            onChanged: (value) {
+              controller.quantity.value = value;
+              controller.validateInput(value);
+            },
+          ),
 
           const SizedBox(height: 10),
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Obx(
-               () {
-                 return ElevatedButton(
-                   onPressed: controller.errorText.value.isEmpty
-                       ? () {
-                     Get.offNamed(AppPages.USER,
-                       arguments: {
-                         'quantity': controller.quantity.value,
-                         'brand': 'Samsung M32', // Example of using Barcode data
-                       },
-                     );
-                   }
-                       : null,
-                   style: ElevatedButton.styleFrom(
-                     backgroundColor: ImagineColors.red,
-                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(8),
-                     ),
-                   ),
-                   child: Text(
-                     'Done',
-                     style: TextStyle(
-                       color: ImagineColors.white,
-                       fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                 );
-              }
-            ),
+            child: Obx(() {
+              return ElevatedButton(
+                onPressed: controller.errorText.value.isEmpty ? () {} : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ImagineColors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Done',
+                  style: TextStyle(
+                    color: ImagineColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }),
           ),
-
         ],
       ),
-    );  
+    );
   }
-
 }

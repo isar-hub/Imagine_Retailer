@@ -7,7 +7,7 @@ import 'package:imagine_retailer/config/ResultState.dart';
 
 import '../models/Users.dart';
 
-class SettingsController extends GetxController {
+class   SettingsController extends GetxController {
   var users = Rx<Result<Users>>(Result.loading());
 
   Future<void> fetchUser(String userId) async {

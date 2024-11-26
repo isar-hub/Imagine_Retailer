@@ -1,14 +1,17 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:imagine_retailer/config/ResultState.dart';
+import 'package:imagine_retailer/config/common_methods.dart';
 import 'package:imagine_retailer/config/constants.dart';
 import 'package:imagine_retailer/controller/UserViewController.dart';
-import 'package:imagine_retailer/screens/warranty_view.dart';
+import 'package:imagine_retailer/screens/widgets/address_picker.dart';
+import 'package:imagine_retailer/screens/widgets/body_with_btn.dart';
+import 'package:imagine_retailer/screens/widgets/common_text_field.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 import '../generated/assets.dart';
@@ -18,73 +21,102 @@ class UserView extends GetView<UserViewController> {
 
   @override
   Widget build(BuildContext context) {
-    // var map = Get.arguments as Map<String, String>;
-    // var quantity = map['quantity'];
-    // var name = map['brand'];
-    var quantity = '1';
-    var name = 'samsung';
     Get.lazyPut(() => UserViewController());
+
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        leading: IconButton(icon :Icon(Icons.arrow_back_ios), onPressed: () {
-          Get.back();
-        },),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Image.asset(
-                Assets.assetsLogoImage, // Replace with your image path
-                height: 40,
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {},
               ),
-            ),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  buidPhoneDetailse(name, quantity),
-                  buildCustomerDetails(context),
-                  SizedBox(height: 80,)
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-              bottom: 10,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: ImagineColors.black,
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 5),
-                child:
-
-
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          side: const BorderSide(color: Colors.black),
-                        ),
-                        padding: EdgeInsets.zero,
-                        backgroundColor: ImagineColors.white,
-                        textStyle: TextStyle(color: ImagineColors.black),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Image.asset(
+                      Assets.assetsLogoImage, // Replace with your image path
+                      height: 40,
                     ),
-                    onPressed: () {
-                      Get.to(WarrantyView());
-                    },
-                    child: Text('Submit',style: TextStyle(color: ImagineColors.black,fontSize: 20,fontWeight: ui.FontWeight.bold),)),
-              ))
-        ],
-      ),
-    ));
+                  ),
+                ),
+              ],
+            ),
+            body: SubmitButtonBody(
+                children: children(context), stackChild: stackChild())));
+  }
+
+  List<Widget> children(BuildContext context) => [
+        buidPhoneDetailse("name", "quantity"),
+        buildCustomerDetails(context),
+        const SizedBox(
+          height: 80,
+        )
+      ];
+  Widget stackChild() {
+    return Obx(() {
+      final result = controller.saveCustomer.value;
+      switch (result.state) {
+        case ResultState.SUCCESS:
+          {
+            showSuccess(result.data!);
+            Get.back();
+            return CircularProgressIndicator();
+          }
+
+        case ResultState.ERROR:
+          showError(result.message!);
+          return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: const BorderSide(color: Colors.black),
+                ),
+                padding: EdgeInsets.zero,
+                backgroundColor: ImagineColors.white,
+                textStyle: TextStyle(color: ImagineColors.black),
+              ),
+              onPressed: () {
+                controller.validateAndUpload();
+              },
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                    color: ImagineColors.black,
+                    fontSize: 20,
+                    fontWeight: ui.FontWeight.bold),
+              ));
+        case ResultState.LOADING:
+          {
+            return CircularProgressIndicator();
+          }
+
+        case ResultState.INITIAL:
+          {
+            return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: const BorderSide(color: Colors.black),
+                  ),
+                  padding: EdgeInsets.zero,
+                  backgroundColor: ImagineColors.white,
+                  textStyle: TextStyle(color: ImagineColors.black),
+                ),
+                onPressed: () {
+                  controller.validateAndUpload();
+                },
+                child: Text(
+                  'Submit',
+                  style: TextStyle(
+                      color: ImagineColors.black,
+                      fontSize: 20,
+                      fontWeight: ui.FontWeight.bold),
+                ));
+          }
+      }
+    });
   }
 
   Widget buildCustomerDetails(BuildContext context) {
@@ -108,103 +140,18 @@ class UserView extends GetView<UserViewController> {
           return controller.signature.value != null
               ? _buildSignatureContainer(
                   controller.signature.value!, 'Signature')
-              : _buildPlaceholder('Please Add Signature');
+              : buildPlaceholder('Please Add Signature');
         }),
-        _buildButton(
-          context,
-          'Add Signature',
-          () => Get.bottomSheet(
-            BottomSheet(
-              onClosing: () {},
-              builder: (context) {
-                return Wrap(
-                  alignment: WrapAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: OutlinedButton(
-                        child: const Text("Done",
-                            style: TextStyle(color: Colors.white)),
-                        onPressed: () async {
-                          controller.imageToBytes(await controller
-                              .signaturePadKey.currentState!
-                              .toImage());
-                          Get.back();
-                        },
-                      ),
-                    ),
-                    SfSignaturePad(
-                      key: controller.signaturePadKey,
-                      backgroundColor: Colors.white,
-                      strokeColor: Colors.black,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-
+        _buildSignatureBtn(),
         const SizedBox(height: 20),
-
-        // Photo Section
         Text('Customer Photo', style: TextStyle(fontSize: 16)),
         Obx(() {
           return controller.image.value != null
-              ? _buildImageContainer(controller.image.value!, 'Photo')
-              : _buildPlaceholder('No Image Selected');
+              ? buildImageContainer(controller.image.value!, 'Photo')
+              : buildPlaceholder('No Image Selected');
         }),
-        _buildButton(
-          context,
-          'Add Photo',
-          () => Get.bottomSheet(
-            BottomSheet(
-              onClosing: () {},
-              builder: (context) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.camera),
-                      title: const Text('Camera'),
-                      onTap: () {
-                        controller.pickImage(ImageSource.camera);
-                        Get.back();
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.photo),
-                      title: const Text('Gallery'),
-                      onTap: () {
-                        controller.pickImage(ImageSource.gallery);
-                        Get.back();
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
+        _buildButton(),
       ],
-    );
-  }
-
-// Helper Widget: Image Container
-  Widget _buildImageContainer(File imageFile, String label) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.transparent,
-        border: Border.all(width: 2, color: Colors.white),
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Image.file(
-        imageFile,
-        height: 200,
-        width: double.infinity,
-        fit: BoxFit.contain,
-      ),
     );
   }
 
@@ -226,235 +173,185 @@ class UserView extends GetView<UserViewController> {
   }
 
 // Helper Widget: Placeholder Container
-  Widget _buildPlaceholder(String message) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.transparent,
-        border: Border.all(width: 2, color: Colors.white),
-      ),
-      child: Center(child: Text(message)),
-    );
-  }
 
-// Helper Widget: Elevated Button
-  Widget _buildButton(
-      BuildContext context, String label, VoidCallback onPressed) {
+  Widget _buildSignatureBtn() {
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: () async {
+        await Get.bottomSheet(
+          BottomSheet(
+            onClosing: () {},
+            builder: (context) {
+              return Wrap(
+                alignment: WrapAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: OutlinedButton(
+                      child: const Text("Done",
+                          style: TextStyle(color: Colors.white)),
+                      onPressed: () async {
+                        controller.imageToBytes(await controller
+                            .signaturePadKey.currentState!
+                            .toImage());
+                        Get.back();
+                      },
+                    ),
+                  ),
+                  SfSignaturePad(
+                    key: controller.signaturePadKey,
+                    backgroundColor: Colors.white,
+                    strokeColor: Colors.black,
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: ImagineColors.white,
         textStyle: TextStyle(color: ImagineColors.black),
       ),
-      child: Text(label, style: TextStyle(color: ImagineColors.black)),
+      child:
+          Text('Add Signature', style: TextStyle(color: ImagineColors.black)),
+    );
+  }
+
+// Helper Widget: Elevated Button
+  Widget _buildButton() {
+    return ElevatedButton(
+      onPressed: () => Get.bottomSheet(
+        BottomSheet(
+          onClosing: () {},
+          builder: (context) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera),
+                  title: const Text('Camera'),
+                  onTap: () async {
+                    controller.image.value =
+                        await pickImage(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo),
+                  title: const Text('Gallery'),
+                  onTap: () async {
+                    controller.image.value =
+                        await pickImage(ImageSource.gallery);
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ImagineColors.white,
+        textStyle: TextStyle(color: ImagineColors.black),
+      ),
+      child: Text('Add Photo', style: TextStyle(color: ImagineColors.black)),
     );
   }
 
   Widget buildForm(BuildContext context) {
     return Form(
-
         key: controller.formKey,
         child: Column(
-
           children: [
-            Text('Customer Details'),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Name',
-                ),
-                onChanged: (value) {},
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                onChanged: (value) {},
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                onChanged: (value) {},
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                onChanged: (value) {},
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Name',
-                      ),
-                      onChanged: (value) {},
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Name',
-                      ),
-                      onChanged: (value) {},
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ImagineColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: const BorderSide(color: Colors.black),
-                ),
-                padding: EdgeInsets.zero, // Remove internal padding
-              ),
-              onPressed: () {
-                _showDialog(
-                    CupertinoPicker(
-                      backgroundColor: Colors.transparent,
-                      looping: true,
-                      itemExtent: 40,
-                      // This sets the initial item.
-                      scrollController: FixedExtentScrollController(
-                        initialItem: controller.indianStatesAndUTs
-                            .indexOf(controller.state.value),
-                      ),
-                      onSelectedItemChanged: (int selectedItem) {
-                        controller.state.value =
-                            controller.indianStatesAndUTs[selectedItem];
-                      },
-
-                      children: List<Widget>.generate(
-                          controller.indianStatesAndUTs.length, (int index) {
-                        return Center(
-                            child: Text(
-                          controller.indianStatesAndUTs[index],
-                          style: const TextStyle(
-                              fontSize: 22.0, color: Colors.black),
-                        ));
-                      }),
-                    ),
-                    context);
+            Text('Add Customer Details'),
+            SizedBox(height: 20),
+            CommonTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      controller.state.value,
-                      style:
-                          const TextStyle(fontSize: 22.0, color: Colors.black),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: ImagineColors.black,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.keyboard_arrow_down_sharp,
-                      color: Colors.white,
-                    ),
-                  )
-                ],
-              ),
+              emailController: controller.nameController,
+              label: 'Name',
+              iconData: Icons.person_pin_outlined,
             ),
+            SizedBox(height: 20),
+            CommonTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+              emailController: controller.phoneController,
+              label: 'Phone',
+              iconData: Icons.phone,
+            ),
+            SizedBox(height: 20),
+            CommonTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+              emailController: controller.emailController,
+              label: 'Email',
+              iconData: Icons.email_outlined,
+            ),
+            SizedBox(height: 20),
+            CommonTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+              emailController: controller.sellingPriceController,
+              label: 'Selling Price',
+              iconData: Icons.currency_rupee_outlined,
+            ),
+            SizedBox(height: 20),
+            CommonTextField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+              maxLines: 5,
+              emailController: controller.addressController,
+              label: 'Address',
+              iconData: Icons.location_on,
+            ),
+            SizedBox(height: 20),
+            AddressPicker(
+                selectedState: (state) {
+                  controller.state.value = state;
+                },
+                selectedCountry: (selectedCountry) {},
+                isCity: false,
+                selectedCity: (selectedCity) {}),
           ],
         ));
   }
+}
 
-  void _showDialog(Widget child, BuildContext context) {
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) => Container(
-        height: 216,
-        padding: const EdgeInsets.only(top: 6.0),
-        // The Bottom margin is provided to align the popup above the system navigation bar.
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        // Provide a background color for the popup.
-        color: Colors.white,
-        // Use a SafeArea widget to avoid system overlaps.
-        child: SafeArea(
-          top: false,
-          child: child,
-        ),
-      ),
-    );
-  }
+// Helper Widget: Image Container
+Widget buildImageContainer(XFile imageFile, String label) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      color: Colors.transparent,
+      border: Border.all(width: 2, color: Colors.white),
+    ),
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    child: Image.file(
+      File(imageFile.path),
+      height: 200,
+      width: double.infinity,
+      fit: BoxFit.contain,
+    ),
+  );
 }
 
 Widget buidPhoneDetailse(String brand, String quantity) {
@@ -462,5 +359,17 @@ Widget buidPhoneDetailse(String brand, String quantity) {
     title: Text(brand),
     subtitle: Text(brand),
     isThreeLine: true,
+  );
+}
+Widget buildPlaceholder(String message) {
+  return Container(
+    height: 200,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      color: Colors.transparent,
+      border: Border.all(width: 2, color: Colors.white),
+    ),
+    child: Center(child: Text(message)),
   );
 }

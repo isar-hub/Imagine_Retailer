@@ -1,72 +1,122 @@
-import 'dart:io';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:imagine_retailer/config/common_methods.dart';
+import 'package:imagine_retailer/models/Customers.dart';
+import 'package:imagine_retailer/models/Product.dart';
+import 'package:imagine_retailer/network/FirebaseApi.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
-class UserViewController extends GetxController{
-  List<String> indianStatesAndUTs = [
-    'Andhra Pradesh',
-    'Arunachal Pradesh',
-    'Assam',
-    'Bihar',
-    'Chhattisgarh',
-    'Goa',
-    'Gujarat',
-    'Haryana',
-    'Himachal Pradesh',
-    'Jharkhand',
-    'Karnataka',
-    'Kerala',
-    'Madhya Pradesh',
-    'Maharashtra',
-    'Manipur',
-    'Meghalaya',
-    'Mizoram',
-    'Nagaland',
-    'Odisha',
-    'Punjab',
-    'Rajasthan',
-    'Sikkim',
-    'Tamil Nadu',
-    'Telangana',
-    'Tripura',
-    'Uttar Pradesh',
-    'Uttarakhand',
-    'West Bengal',
-    'Andaman and Nicobar Islands',
-    'Chandigarh',
-    'Dadra and Nagar Haveli and Daman and Diu',
-    'Lakshadweep',
-    'Delhi',
-    'Puducherry',
-    'Ladakh',
-    'Jammu and Kashmir',
-  ];
+import '../config/ResultState.dart';
 
-  var image = Rx<File?>(null);
+class UserViewController extends GetxController {
+  final repository = FirebaseApi();
+  var image = Rx<XFile?>(null);
   final formKey = GlobalKey<FormState>();
   GlobalKey<SfSignaturePadState> signaturePadKey = GlobalKey();
   var signature = Rx<Uint8List?>(null);
 
+  var nameController = TextEditingController();
+  var emailController = TextEditingController();
+  var phoneController = TextEditingController();
+  var sellingPriceController = TextEditingController();
+  var addressController = TextEditingController();
 
-  Future imageToBytes(ui.Image image) async {
-    final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    signature.value =  byteData!.buffer.asUint8List();
-  }
+  late Product product;
 
-  Future<void> pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-
-    if (pickedFile != null) {
-      image.value = File(pickedFile.path);
-    }
+  @override
+  void onInit() {
+    super.onInit();
+    product = Get.arguments;
+    log(product.toString());
   }
 
   var state = 'State'.obs;
 
+  Future imageToBytes(ui.Image image) async {
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    signature.value = byteData!.buffer.asUint8List();
+  }
+
+  void validateAndUpload() {
+    if (validateForm(
+        name: nameController.text,
+        email: emailController.text,
+        mobile: phoneController.text,
+        address: addressController.text,
+        state: state.value,
+        image: image.value,
+        signature: signature.value)) {
+      uploadCustomerImageAndSignature();
+    } else {
+      showError("All Field are mandatory");
+    }
+  }
+
+  void uploadCustomerImageAndSignature() async {
+    saveCustomer.value = Result.loading();
+    if (image.value != null && signature.value != null) {
+      final imageUrl =
+          await repository.uploadImage('customers/image/', image.value!);
+      if (imageUrl.state == ResultState.SUCCESS) {
+        final signatureUrl = await repository.uploadSignature(
+            'customers/signature/', signature.value!);
+        if (signatureUrl.state == ResultState.SUCCESS) {
+          var customerDetails = getCustomer(imageUrl.data!, signatureUrl.data!);
+          var result = await repository.saveCustomerDetails(
+              customerDetails, product.serialNumber);
+          saveCustomer.value = result;
+        } else {
+          saveCustomer.value = signatureUrl;
+        }
+      } else {
+        saveCustomer.value = imageUrl;
+      }
+    } else {
+      saveCustomer.value = Result.error("Error in Uploading!!");
+      showError("Signature and image are required.");
+    }
+  }
+
+  var saveCustomer = Rx<Result<String>>(Result.initial());
+
+  CustomerInfo getCustomer(String imgUrl, String signatureUrl) {
+    return CustomerInfo(
+        warrantyEnded: now(),
+        warrantyStarted: six_months(),
+        name: nameController.text,
+        phone: phoneController.text,
+        email: emailController.text,
+        sellingPrice: sellingPriceController.text,
+        address: addressController.text,
+        state: state.value,
+        status: ProductStatus.SOLD,
+        signatureUrl: signatureUrl,
+        imageUrl: imgUrl);
+  }
+
+  bool validateForm(
+      {required String name,
+      required String email,
+      required String mobile,
+      required String address,
+      required String state,
+      required XFile? image,
+      required Uint8List? signature}) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        (mobile.isEmpty && mobile.length != 10) ||
+        address.isEmpty ||
+        (state.isEmpty && !getState().contains(state)) ||
+        image == null ||
+        signature == null) {
+      return false;
+    }
+    return true;
+  }
 }
