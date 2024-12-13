@@ -24,7 +24,7 @@ class Product {
       condition: json['condition'] ?? 'Unknown Condition',
       model: json['model'] ?? 'Unknown Model',
       variant: json['variant'] ?? 'Unknown Variant',
-      sellingPrice: (json['sellingPrice'] ?? 0.0),
+      sellingPrice: (json['sellingPrice']) ?? '0',
       serialNumber: json['serialNumber'] ?? 'Unknown Serial',
       status: ProductStatus.values.firstWhere(
             (e) => e.name == json['status'],

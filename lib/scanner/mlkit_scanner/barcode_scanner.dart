@@ -83,7 +83,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   void _handleBarcodeDetected(Barcode barcode) {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Get.off(const BarcodeView(),arguments: barcode.displayValue);
+      Get.offAll(const BarcodeView(),arguments: barcode.displayValue);
     });
   }
 

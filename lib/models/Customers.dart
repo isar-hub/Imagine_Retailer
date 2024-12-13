@@ -5,7 +5,7 @@ class CustomerInfo {
   String phone;
   String email;
   String imageUrl;
-  String sellingPrice;
+  String retailerSellingPrice;
   String state;
   String address;
   String signatureUrl;
@@ -17,7 +17,7 @@ class CustomerInfo {
     required this.name,
     required this.phone,
     required this.email,
-    required this.sellingPrice,
+    required this.retailerSellingPrice,
     required this.address,
     required this.state,
     required this.signatureUrl,
@@ -36,7 +36,7 @@ class CustomerInfo {
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
-      sellingPrice: json['sellingPrice'] ?? '',
+      retailerSellingPrice: json['sellingPrice'] ?? "0.0",
       address: json['address'],
       state: json['state'] ?? '',
       signatureUrl: json['signatureUrl'] ?? '',
@@ -51,12 +51,13 @@ class CustomerInfo {
       'email': email,
       'phone': phone,
       'imageUrl': imageUrl,
-      'sellingPrice': sellingPrice,
+      'sellingPrice': retailerSellingPrice,
       'address': address,
       'state': state,
       'warrantyStarted': warrantyStarted,
       'warrantyEnded': warrantyEnded,
       'signatureUrl': signatureUrl,
+      'status':status.name
     };
   }
 

@@ -5,11 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
-import 'package:imagine_retailer/screens/login_screen.dart';
-
 import '../scanner/mlkit_scanner/barcode_scanner.dart';
 import '../screens/home_activity.dart';
+import '../screens/login_screen.dart';
 import '../screens/notification_view.dart';
 import '../screens/settings.dart';
 import '../screens/user_view.dart';

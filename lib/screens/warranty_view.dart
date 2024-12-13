@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:imagine_retailer/screens/home_activity.dart';
 import 'package:imagine_retailer/screens/user_view.dart';
+import 'package:imagine_retailer/screens/widgets/Header.dart';
 import 'package:imagine_retailer/screens/widgets/SubmitButton.dart';
 import 'package:imagine_retailer/screens/widgets/body_with_btn.dart';
 import 'package:imagine_retailer/screens/widgets/common_text_field.dart';
@@ -21,11 +23,11 @@ class WarrantyView extends GetView<WarrantyController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => WarrantyController());
     var children = [
-      buidPhoneDetailse('1', 'isar'),
+      buildProductInformation(controller.product),
       buildForm(context),
       buildImageSection(),
       buildProductImage(),
-      SizedBox(
+      const SizedBox(
         height: 80,
       )
     ];
@@ -34,9 +36,11 @@ class WarrantyView extends GetView<WarrantyController> {
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+                icon: const Icon(Icons.arrow_back_ios),
                 onPressed: () {
-                  Get.back();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Get.offAll(HomeActivity());
+                  });
                 },
               ),
               actions: [
@@ -56,24 +60,23 @@ class WarrantyView extends GetView<WarrantyController> {
               final result = controller.updateWarrantyState.value;
               switch (result.state) {
                 case ResultState.SUCCESS:
-                  {
-                    showSuccess(result.data!);
-                    Get.back();
-                    return CircularProgressIndicator();
-                  }
-
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Get.off(HomeActivity());
+                  });
+                  return const CircularProgressIndicator(
+                    color: Colors.black,
+                  );
                 case ResultState.ERROR:
-                  showError(result.message!);
-                  return stackChild(children);
+                  return Center(
+                    child: Text(result.message!),
+                  );
                 case ResultState.LOADING:
-                  {
-                    return CircularProgressIndicator();
-                  }
-
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
                 case ResultState.INITIAL:
-                  {
-                    return stackChild(children);
-                  }
+                  return stackChild(children);
               }
             })));
   }
@@ -90,7 +93,8 @@ class WarrantyView extends GetView<WarrantyController> {
     return Form(
         child: Column(
       children: [
-        Text('Customer Details'),
+        Divider(),
+        buildHeader('Warranty Details', color: Colors.white),
         SizedBox(
           height: 20,
         ),

@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +38,7 @@ class UserViewController extends GetxController {
   }
 
   var state = 'State'.obs;
+  var city = ''.obs;
 
   Future imageToBytes(ui.Image image) async {
     final ByteData? byteData =
@@ -58,28 +61,34 @@ class UserViewController extends GetxController {
     }
   }
 
-  void uploadCustomerImageAndSignature() async {
+  Future<void> uploadCustomerImageAndSignature() async {
     saveCustomer.value = Result.loading();
-    if (image.value != null && signature.value != null) {
-      final imageUrl =
-          await repository.uploadImage('customers/image/', image.value!);
-      if (imageUrl.state == ResultState.SUCCESS) {
-        final signatureUrl = await repository.uploadSignature(
-            'customers/signature/', signature.value!);
-        if (signatureUrl.state == ResultState.SUCCESS) {
-          var customerDetails = getCustomer(imageUrl.data!, signatureUrl.data!);
-          var result = await repository.saveCustomerDetails(
-              customerDetails, product.serialNumber);
-          saveCustomer.value = result;
+    try {
+      if (image.value != null && signature.value != null) {
+        final imageUrl =
+            await repository.uploadImage('customers/image/', image.value!);
+        if (imageUrl.state == ResultState.SUCCESS) {
+          final signatureUrl = await repository.uploadSignature(
+              'customers/signature/', signature.value!);
+          if (signatureUrl.state == ResultState.SUCCESS) {
+            var customerDetails =
+                getCustomer(imageUrl.data!, signatureUrl.data!);
+            var result = await repository.saveCustomerDetails(
+                customerDetails, product.serialNumber.toString());
+            saveCustomer.value = result;
+          } else {
+            saveCustomer.value = signatureUrl;
+          }
         } else {
-          saveCustomer.value = signatureUrl;
+          saveCustomer.value = imageUrl;
         }
       } else {
-        saveCustomer.value = imageUrl;
+        saveCustomer.value = Result.error("Error in Uploading!!");
       }
-    } else {
-      saveCustomer.value = Result.error("Error in Uploading!!");
-      showError("Signature and image are required.");
+    } on FirebaseException catch (e) {
+      saveCustomer.value = Result.error('Firebase Error: ${e.message}');
+    } catch (e) {
+      saveCustomer.value = Result.error('Unexpected Error: $e');
     }
   }
 
@@ -87,13 +96,13 @@ class UserViewController extends GetxController {
 
   CustomerInfo getCustomer(String imgUrl, String signatureUrl) {
     return CustomerInfo(
-        warrantyEnded: now(),
-        warrantyStarted: six_months(),
+        warrantyEnded: six_months(),
+        warrantyStarted: now(),
         name: nameController.text,
         phone: phoneController.text,
         email: emailController.text,
-        sellingPrice: sellingPriceController.text,
-        address: addressController.text,
+        retailerSellingPrice: sellingPriceController.text,
+        address: '${addressController.text}, $city',
         state: state.value,
         status: ProductStatus.SOLD,
         signatureUrl: signatureUrl,

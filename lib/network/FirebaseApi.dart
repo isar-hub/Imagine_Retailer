@@ -70,6 +70,7 @@ class FirebaseApi {
       showError("${e.message}");
       return Result.error(e.message!);
     }
+
   }
 
   Future<Result<String>> uploadSignature(String path, Uint8List image) async {

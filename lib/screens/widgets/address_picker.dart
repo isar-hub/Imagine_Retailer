@@ -9,7 +9,6 @@ class AddressPicker extends StatelessWidget {
 
   final String? initialState;
   final String? initialCity;
-  final bool isCity;
 
   const AddressPicker(
       {super.key,
@@ -19,13 +18,13 @@ class AddressPicker extends StatelessWidget {
       this.initialCountry,
       this.initialState,
       this.initialCity,
-      this.isCity = true});
+      });
 
   @override
   Widget build(BuildContext context) {
     return CSCPicker(
       showStates: true,
-      showCities: isCity,
+      showCities: true,
       flagState: CountryFlag.ENABLE,
       dropdownDecoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -42,13 +41,13 @@ class AddressPicker extends StatelessWidget {
       stateDropdownLabel: "*State",
       cityDropdownLabel: "*City",
       defaultCountry: CscCountry.India,
-      selectedItemStyle: TextStyle(
+      selectedItemStyle: const TextStyle(
         color: Colors.black,
         fontSize: 14,
       ),
-      dropdownHeadingStyle: TextStyle(
+      dropdownHeadingStyle: const TextStyle(
           color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-      dropdownItemStyle: TextStyle(
+      dropdownItemStyle: const TextStyle(
         color: Colors.white,
         fontSize: 14,
       ),

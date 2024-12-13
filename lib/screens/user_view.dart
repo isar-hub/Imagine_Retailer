@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +9,10 @@ import 'package:imagine_retailer/config/ResultState.dart';
 import 'package:imagine_retailer/config/common_methods.dart';
 import 'package:imagine_retailer/config/constants.dart';
 import 'package:imagine_retailer/controller/UserViewController.dart';
+import 'package:imagine_retailer/models/Product.dart';
+import 'package:imagine_retailer/screens/home_activity.dart';
+import 'package:imagine_retailer/screens/widgets/Header.dart';
+import 'package:imagine_retailer/screens/widgets/SubmitButton.dart';
 import 'package:imagine_retailer/screens/widgets/address_picker.dart';
 import 'package:imagine_retailer/screens/widgets/body_with_btn.dart';
 import 'package:imagine_retailer/screens/widgets/common_text_field.dart';
@@ -23,12 +27,24 @@ class UserView extends GetView<UserViewController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => UserViewController());
 
+    List<Widget> children(BuildContext context) => [
+          buildProductInformation(controller.product),
+          buildCustomerDetails(context),
+          const SizedBox(
+            height: 80,
+          )
+        ];
+
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () {},
+                onPressed: () {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Get.offAll(HomeActivity());
+                  });
+                },
               ),
               actions: [
                 Padding(
@@ -43,81 +59,40 @@ class UserView extends GetView<UserViewController> {
                 ),
               ],
             ),
-            body: SubmitButtonBody(
-                children: children(context), stackChild: stackChild())));
+            body: Obx(() {
+              final result = controller.saveCustomer.value;
+              log(controller.saveCustomer.value.state.toString());
+              switch (result.state) {
+                case ResultState.SUCCESS:
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Get.off(HomeActivity());
+                  });
+                  return const CircularProgressIndicator(
+                    color: Colors.black,
+                  );
+                case ResultState.ERROR:
+                  return Center(
+                    child: Text(result.message!),
+                  );
+                case ResultState.LOADING:
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
+                case ResultState.INITIAL:
+                  return stackChild(children(context));
+              }
+            })));
   }
 
-  List<Widget> children(BuildContext context) => [
-        buidPhoneDetailse("name", "quantity"),
-        buildCustomerDetails(context),
-        const SizedBox(
-          height: 80,
-        )
-      ];
-  Widget stackChild() {
-    return Obx(() {
-      final result = controller.saveCustomer.value;
-      switch (result.state) {
-        case ResultState.SUCCESS:
-          {
-            showSuccess(result.data!);
-            Get.back();
-            return CircularProgressIndicator();
-          }
+  Widget stackChild(List<Widget> children) =>
+      SubmitButtonBody(stackChild: buildSubmitBtn(), children: children);
 
-        case ResultState.ERROR:
-          showError(result.message!);
-          return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: const BorderSide(color: Colors.black),
-                ),
-                padding: EdgeInsets.zero,
-                backgroundColor: ImagineColors.white,
-                textStyle: TextStyle(color: ImagineColors.black),
-              ),
-              onPressed: () {
-                controller.validateAndUpload();
-              },
-              child: Text(
-                'Submit',
-                style: TextStyle(
-                    color: ImagineColors.black,
-                    fontSize: 20,
-                    fontWeight: ui.FontWeight.bold),
-              ));
-        case ResultState.LOADING:
-          {
-            return CircularProgressIndicator();
-          }
-
-        case ResultState.INITIAL:
-          {
-            return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: const BorderSide(color: Colors.black),
-                  ),
-                  padding: EdgeInsets.zero,
-                  backgroundColor: ImagineColors.white,
-                  textStyle: TextStyle(color: ImagineColors.black),
-                ),
-                onPressed: () {
-                  controller.validateAndUpload();
-                },
-                child: Text(
-                  'Submit',
-                  style: TextStyle(
-                      color: ImagineColors.black,
-                      fontSize: 20,
-                      fontWeight: ui.FontWeight.bold),
-                ));
-          }
-      }
-    });
-  }
+  Widget buildSubmitBtn() => SubmitButton(
+        onPressed: () async {
+          controller.validateAndUpload();
+        },
+      );
 
   Widget buildCustomerDetails(BuildContext context) {
     return Column(
@@ -261,8 +236,11 @@ class UserView extends GetView<UserViewController> {
         key: controller.formKey,
         child: Column(
           children: [
-            Text('Add Customer Details'),
-            SizedBox(height: 20),
+            Divider(),
+            buildHeader('Add Customer Details', color: Colors.white),
+            SizedBox(
+              height: 20,
+            ),
             CommonTextField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -306,6 +284,7 @@ class UserView extends GetView<UserViewController> {
                 }
                 return null;
               },
+              inputType: TextInputType.phone,
               emailController: controller.sellingPriceController,
               label: 'Selling Price',
               iconData: Icons.currency_rupee_outlined,
@@ -329,11 +308,60 @@ class UserView extends GetView<UserViewController> {
                   controller.state.value = state;
                 },
                 selectedCountry: (selectedCountry) {},
-                isCity: false,
-                selectedCity: (selectedCity) {}),
+                selectedCity: (selectedCity) {
+                  controller.city.value = selectedCity;
+                }),
           ],
         ));
   }
+}
+
+Widget buildProductInformation(Product product) => Card(
+      color: Colors.white,
+      child: ExpansionTile(
+        title: buildHeader(
+          'Product Information',
+        ),
+        iconColor: Colors.black,
+        collapsedIconColor: Colors.red,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildProductInfoRow('Serial Number', product.serialNumber),
+                buildProductInfoRow('Brand', product.brand),
+                buildProductInfoRow('Model', product.model),
+                buildProductInfoRow('Variant', product.variant),
+                buildProductInfoRow('Condition', product.condition),
+                buildProductInfoRow(
+                    'Selling Price', '₹ ${product.sellingPrice}'),
+                buildProductInfoRow('Status', product.status.name),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+Widget buildProductInfoRow(String title, String value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        Text(
+          value,
+          style: const TextStyle(color: Colors.black),
+        ),
+      ],
+    ),
+  );
 }
 
 // Helper Widget: Image Container
@@ -354,13 +382,6 @@ Widget buildImageContainer(XFile imageFile, String label) {
   );
 }
 
-Widget buidPhoneDetailse(String brand, String quantity) {
-  return ListTile(
-    title: Text(brand),
-    subtitle: Text(brand),
-    isThreeLine: true,
-  );
-}
 Widget buildPlaceholder(String message) {
   return Container(
     height: 200,

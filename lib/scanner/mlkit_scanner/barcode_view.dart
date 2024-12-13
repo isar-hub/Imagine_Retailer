@@ -18,11 +18,11 @@ class BarcodeView extends GetView<BarCodeController> {
       child: Scaffold(
         body: Obx(() {
           final resultProduct = controller.product.value;
-
           switch (resultProduct.state) {
             case ResultState.SUCCESS:
               final product = resultProduct.data!;
-              if (controller.barCode == product.serialNumber) {
+              if (controller.barCode.toString() ==
+                  product.serialNumber.toString()) {
                 final targetView = (product.status == ProductStatus.BILLED)
                     ? UserView()
                     : (product.status == ProductStatus.SOLD)
@@ -30,9 +30,11 @@ class BarcodeView extends GetView<BarCodeController> {
                         : null;
 
                 if (targetView != null) {
+
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Get.off(targetView, arguments: product);
+                    Get.offAll(targetView, arguments: product);
                   });
+
                 } else {
                   return const Center(child: Text('Invalid product.'));
                 }

@@ -39,6 +39,8 @@ class BarCodeController extends GetxController {
       log(serialNumber);
       var doc = await _firestore.collection("products").doc(serialNumber).get();
       if (doc.exists) {
+
+        log("Product Found ${doc.data()}");
         product.value =
             Result.success(Product.fromJson(doc.data() as Map<String, dynamic>));
       } else {

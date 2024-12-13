@@ -62,7 +62,8 @@ class WarrantyController extends GetxController {
             reason: reasonController.text,
             reasonDescription: reasonDescriptionController.text,
             images: urls,
-            createdAt: now())
+            createdAt: now()
+        )
       ];
 
   Future<void> updateWarranty() async {
@@ -90,7 +91,7 @@ class WarrantyController extends GetxController {
         final warranty = getWarranty(images.data!);
 
         // Step 3: Update Warranty in Backend
-        await repository.updateWarranty(warranty, product.serialNumber);
+        await repository.updateWarranty(warranty, product.serialNumber.toString());
 
         // Success State
         updateWarrantyState.value =
