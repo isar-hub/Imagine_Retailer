@@ -35,7 +35,10 @@ class SettingsPage extends GetView<SettingsController> {
 
   Widget buildUserNotEmpty(Users user) => Column(
         children: [
+          SizedBox(height: 10),
           buildUserInfoSection(user),
+          SizedBox(height: 20),
+          buildButton('Transactions', Icons.history, user),
           buildButton('SignOut', Icons.logout, user),
         ],
       );
@@ -66,14 +69,18 @@ class SettingsPage extends GetView<SettingsController> {
 
   // User Info Section with Profile Image and Display Name
   Widget buildUserInfoSection(Users user) {
+
+    final imagePath = (user.image != null && user.image!.isNotEmpty)
+        ? user.image!
+        : "https://avatar.iran.liara.run/username?username=${user.name ?? 'Guest'}";
     return SettingsCard([
       Expanded(
         child: DisplayImage(
-          imagePath: user.image!.isEmpty
-              ? "https://avatar.iran.liara.run/username?username=${user.name ?? 'Guest'}"
-              : user.image!,
+          imagePath: imagePath,
           onPressed: () {
-            Get.to(EditProfile(user: user,));
+            Get.to(EditProfile(
+              user: user,
+            ));
           },
         ),
       ),
@@ -103,23 +110,20 @@ class SettingsPage extends GetView<SettingsController> {
       );
 
   // SettingsCard widget with tap functionality to navigate to EditProfile screen
-  Widget SettingsCard(List<Widget> children, Users user) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GestureDetector(
-          onTap: () {
-            Get.to(EditProfile(
-              user: user,
-            ));
-          },
-          child: Card(
-            color: Colors.white,
-            child: Row(
-              children: children,
-              mainAxisAlignment: MainAxisAlignment.end,
-            ),
-          ),
-        ),
-      );
+  Widget SettingsCard(List<Widget> children, Users user) => GestureDetector(
+    onTap: () {
+      Get.to(EditProfile(
+        user: user,
+      ));
+    },
+    child: Card(
+      color: Colors.white,
+      child: Row(
+        children: children,
+        mainAxisAlignment: MainAxisAlignment.end,
+      ),
+    ),
+  );
 
   // About section, displaying user's creation date
   Widget buildAbout(User user) {

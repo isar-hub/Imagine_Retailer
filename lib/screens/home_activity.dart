@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:imagine_retailer/config/constants.dart';
 import 'package:imagine_retailer/controller/HomeController.dart';
 import 'package:imagine_retailer/generated/assets.dart';
+import 'package:imagine_retailer/screens/barcode_view.dart';
 import 'package:imagine_retailer/screens/notification_view.dart';
 import 'package:imagine_retailer/screens/settings.dart';
 
@@ -28,7 +29,7 @@ class HomeActivity extends GetView<Homecontroller> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const BarcodeScannerView(),
+                  builder: (context) => const BarcodeView(),
                 ),
               );
             },

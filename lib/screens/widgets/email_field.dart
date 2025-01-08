@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 
 class EmailField extends StatefulWidget {
   final bool fadeEmail;
+  final IconData? iconData;
+
   final TextEditingController emailController;
   const EmailField(
-      {super.key, required this.emailController, required this.fadeEmail});
+      {super.key, required this.emailController, required this.fadeEmail, this.iconData});
 
   @override
   State<EmailField> createState() => _EmailFieldState();
@@ -64,13 +66,16 @@ class _EmailFieldState extends State<EmailField>
               decoration:
 
               InputDecoration(
-                hintText: "Email",
+                hintText: "Username",
                 hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
                 contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 border: OutlineInputBorder(borderSide: BorderSide.none),
+                prefixIcon: Icon(widget.iconData,color: Colors.white,),
+
+
 
               ),
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.name,
               onChanged: (value) async {
                 if (value.isNotEmpty) {
                   if (isValidEmail(value)) {
@@ -214,11 +219,10 @@ class _PasswordFieldState extends State<PasswordField> {
 
               InputDecoration(
 
-                hintText: widget.hintText ??"Password",
+                hintText: widget.hintText != null ? widget.hintText : "Password",
                 hintStyle: TextStyle(color: Colors.black.withOpacity(0.7)),
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                border: OutlineInputBorder(borderSide: BorderSide.none),
-                prefixIcon: Icon(widget.iconData,color: Colors.black,),
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
+                prefixIcon: Icon(widget.iconData,color: Colors.white,),
 
 
               ),

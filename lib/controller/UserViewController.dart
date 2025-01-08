@@ -104,9 +104,13 @@ class UserViewController extends GetxController {
         retailerSellingPrice: sellingPriceController.text,
         address: '${addressController.text}, $city',
         state: state.value,
-        status: ProductStatus.SOLD,
         signatureUrl: signatureUrl,
-        imageUrl: imgUrl);
+        imageUrl: imgUrl,
+        status: ProductStatus(
+            billed: product.status.billed,
+            inventory: product.status.inventory,
+            warranty: product.status.warranty,
+            sold: Timestamp.now()));
   }
 
   bool validateForm(

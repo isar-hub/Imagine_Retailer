@@ -147,8 +147,6 @@ class UserView extends GetView<UserViewController> {
     );
   }
 
-// Helper Widget: Placeholder Container
-
   Widget _buildSignatureBtn() {
     return ElevatedButton(
       onPressed: () async {
@@ -236,9 +234,9 @@ class UserView extends GetView<UserViewController> {
         key: controller.formKey,
         child: Column(
           children: [
-            Divider(),
+            const Divider(),
             buildHeader('Add Customer Details', color: Colors.white),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             CommonTextField(
@@ -252,7 +250,7 @@ class UserView extends GetView<UserViewController> {
               label: 'Name',
               iconData: Icons.person_pin_outlined,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CommonTextField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -264,7 +262,7 @@ class UserView extends GetView<UserViewController> {
               label: 'Phone',
               iconData: Icons.phone,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CommonTextField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -276,20 +274,8 @@ class UserView extends GetView<UserViewController> {
               label: 'Email',
               iconData: Icons.email_outlined,
             ),
-            SizedBox(height: 20),
-            CommonTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
-              inputType: TextInputType.phone,
-              emailController: controller.sellingPriceController,
-              label: 'Selling Price',
-              iconData: Icons.currency_rupee_outlined,
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const SizedBox(height: 20),
             CommonTextField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -302,7 +288,7 @@ class UserView extends GetView<UserViewController> {
               label: 'Address',
               iconData: Icons.location_on,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             AddressPicker(
                 selectedState: (state) {
                   controller.state.value = state;
@@ -310,7 +296,8 @@ class UserView extends GetView<UserViewController> {
                 selectedCountry: (selectedCountry) {},
                 selectedCity: (selectedCity) {
                   controller.city.value = selectedCity;
-                }),
+                }
+                ),
           ],
         ));
   }
@@ -335,9 +322,8 @@ Widget buildProductInformation(Product product) => Card(
                 buildProductInfoRow('Model', product.model),
                 buildProductInfoRow('Variant', product.variant),
                 buildProductInfoRow('Condition', product.condition),
-                buildProductInfoRow(
-                    'Selling Price', '₹ ${product.sellingPrice}'),
-                buildProductInfoRow('Status', product.status.name),
+                buildProductInfoRow('Selling Price', '₹ ${product.sellingPrice}'),
+                // buildProductInfoRow('Status', product.status.billed.toString()),
               ],
             ),
           ),

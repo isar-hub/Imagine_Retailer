@@ -40,7 +40,7 @@ class CustomerInfo {
       address: json['address'],
       state: json['state'] ?? '',
       signatureUrl: json['signatureUrl'] ?? '',
-      status: json['status'] ?? '',
+      status: ProductStatus.fromMap(json['status']),
     );
   }
 
@@ -57,7 +57,7 @@ class CustomerInfo {
       'warrantyStarted': warrantyStarted,
       'warrantyEnded': warrantyEnded,
       'signatureUrl': signatureUrl,
-      'status':status.name
+      'status':status.toMap()
     };
   }
 

@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:imagine_retailer/scanner/mlkit_scanner/barcode_view.dart';
+import 'package:imagine_retailer/screens/barcode_view.dart';
 import 'package:imagine_retailer/scanner/mlkit_scanner/camera_view.dart';
 
 import 'barcode_detector_painter.dart';
@@ -15,7 +15,6 @@ class BarcodeScannerView extends StatefulWidget {
 
   @override
   State<BarcodeScannerView> createState() => _BarcodeScannerViewState();
-
 }
 
 class _BarcodeScannerViewState extends State<BarcodeScannerView> {
@@ -63,7 +62,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           setState(() {
             isDetected = true;
           });
-          _handleBarcodeDetected(barcodes[0]); // Move barcode handling to a separate method
+          _handleBarcodeDetected(
+              barcodes[0]); // Move barcode handling to a separate method
         }
 
         // Draw detected barcodes
@@ -80,13 +80,18 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     }
   }
 
+  // void _handleBarcodeDetected(Barcode barcode) {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     Get.offAll(const BarcodeView(), arguments: barcode.displayValue);
+  //   });
+  // }
   void _handleBarcodeDetected(Barcode barcode) {
+    final scannedValue = barcode.displayValue;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Get.offAll(const BarcodeView(),arguments: barcode.displayValue);
+      Get.back(result: scannedValue); // Return the scanned value
     });
   }
-
   void _handleNoBarcodeFound(List<Barcode> barcodes) {
     String text = 'Barcodes found: ${barcodes.length}\n\n';
     for (final barcode in barcodes) {

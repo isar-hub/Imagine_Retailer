@@ -1,4 +1,6 @@
-    class Users {
+    import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Users {
       String? uid;
       String? name;
       String? email;
@@ -10,10 +12,10 @@
       String? address;
       String? city;
       String? role;
-      String? image = null;
+      String? image;
       int? pinCode;
       String? state;
-      String? createdAt; // Use DateTime instead of String for better date handling
+      Timestamp? createdAt; // Use DateTime instead of String for better date handling
 
       // Constructor
       Users({

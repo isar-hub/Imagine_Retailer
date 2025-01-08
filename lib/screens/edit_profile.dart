@@ -8,8 +8,8 @@ import '../controller/SettingsController.dart';
 import '../models/Users.dart';
 
 class EditProfile extends StatelessWidget {
-
   final Users user;
+
   const EditProfile({super.key, required this.user});
 
   @override
@@ -23,12 +23,17 @@ class EditProfile extends StatelessWidget {
     final companyNameController = TextEditingController(text: user.companyName);
     final gstController = TextEditingController(text: user.gstNumber);
     final addressController = TextEditingController(text: user.address);
-    final pinCodeController = TextEditingController(text: user.pinCode.toString());
+    final pinCodeController =
+        TextEditingController(text: user.pinCode.toString());
     final passWordController = TextEditingController(text: user.password);
     final cnfrmPasswordController = TextEditingController(text: user.password);
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Profile'),
+
+        ),
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(10),
@@ -45,7 +50,7 @@ class EditProfile extends StatelessWidget {
                         child: CircleAvatar(
                           child: Image.network(
                             fit: BoxFit.fill,
-                                "https://avatar.iran.liara.run/username?username=${"isar"}",
+                            "https://avatar.iran.liara.run/username?username=${"isar"}",
                           ),
                         ),
                       ),
@@ -68,20 +73,21 @@ class EditProfile extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 // Form fields
-                buildTextField("Full Name", nameController, Icons.person_2_outlined),
+                buildTextField(
+                    "Full Name", nameController, Icons.person_2_outlined),
                 buildTextField("Email", emailController, Icons.email_outlined),
                 buildTextField("Mobile", mobileController, Icons.phone),
                 buildTextField("Company Name", companyNameController,
                     Icons.home_work_outlined),
                 buildTextField(
                     "GST Number", gstController, Icons.text_snippet_outlined),
-                Divider(),
+                const Divider(),
                 buildTextField("Username", nameController, Icons.person),
-                buildPassword(passWordController,"Password"),
-                buildPassword(cnfrmPasswordController,"Confirm Password"),
+                buildPassword(passWordController, "Password"),
+                buildPassword(cnfrmPasswordController, "Confirm Password"),
 
 
-                Divider(),
+                const Divider(),
 
                 buildTextField("Address", addressController, Icons.notes_sharp),
                 // buildStateDropdown(controller),
@@ -94,7 +100,9 @@ class EditProfile extends StatelessWidget {
                     selectedState: (state) {},
                     selectedCountry: (selectedCountry) {},
                     selectedCity: (selectedCity) {}),
-                SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 ElevatedButton(
                   onPressed: () {
                     if (controller.validateForm(
@@ -115,7 +123,10 @@ class EditProfile extends StatelessWidget {
                       );
                     }
                   },
-                  child: const Text("Save",style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -127,10 +138,15 @@ class EditProfile extends StatelessWidget {
 
   // Build state dropdown
 
-
-  Widget buildPassword(TextEditingController textController,String hinttext){
-    return Padding(padding: EdgeInsets.symmetric(vertical: 10),
-    child: PasswordField(passwordController: textController, fadePassword: false,iconData: Icons.lock_clock_sharp,hintText: hinttext,),
+  Widget buildPassword(TextEditingController textController, String hinttext) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: PasswordField(
+        passwordController: textController,
+        fadePassword: false,
+        iconData: Icons.lock_clock_sharp,
+        hintText: hinttext,
+      ),
     );
   }
 

@@ -46,19 +46,36 @@ class FirebaseApi {
     }
   }
 
-  Future<Result<String>> saveCustomerDetails(
-      CustomerInfo user, String serialNumber) async {
+  Future<Result<String>> saveCustomerDetails(CustomerInfo user, String serialNumber) async {
+    final firestore = FirebaseFirestore.instance;
+
     try {
-      await FirebaseFirestore.instance
-          .collection("products")
-          .doc(serialNumber)
-          .update(user.toMap());
+      // Use a transaction to ensure atomicity
+      await firestore.runTransaction((transaction) async {
+        // Update customer details
+        final customerRef = firestore.collection("customers").doc(serialNumber);
+        transaction.set(customerRef, user.toMap());
+
+        var userUpdate = {
+          'warrantyStarted': user.warrantyStarted,
+          'warrantyEnded': user.warrantyEnded,
+          'status': user.status.toMap(), // Assuming `user.status` is a ProductStatus object
+        };
+
+        // Update product warranty status
+        final productRef = firestore.collection("all-products").doc(serialNumber);
+        transaction.update(productRef, userUpdate);
+      });
+
       return Result.success('Product Updated Successfully');
     } on FirebaseException catch (e) {
       showError("${e.message}");
       return Result.error(e.message!);
+    } catch (e) {
+      return Result.error('Unexpected Error: $e');
     }
   }
+
 
   Future<Result<String>> uploadImage(String path, XFile image) async {
     try {

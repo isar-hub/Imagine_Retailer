@@ -11,7 +11,7 @@ class ImagineTheme {
       bottomNavigationBarTheme: bottomNavigationBarTheme,
         scaffoldBackgroundColor: ImagineColors.red,
       iconTheme: const IconThemeData(color: Colors.white),
-      dialogTheme:  DialogTheme(
+      dialogTheme:  DialogThemeData(
         backgroundColor: ImagineColors.white
       ),
       elevatedButtonTheme:  ElevatedButtonThemeData(

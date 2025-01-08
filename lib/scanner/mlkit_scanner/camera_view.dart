@@ -24,7 +24,9 @@ class CameraView extends StatefulWidget {
   final CameraLensDirection initialCameraLensDirection;
 
   final bool isDetected;
-
+  static Future<void> stopLive() async {
+    await _CameraViewState._stopLiveFeed();
+  }
 
   @override
   State<CameraView> createState() => _CameraViewState();
@@ -34,7 +36,7 @@ class CameraView extends StatefulWidget {
 
 class _CameraViewState extends State<CameraView>implements onDetectedListener  {
   static List<CameraDescription> _cameras = [];
-  CameraController? _controller;
+  static CameraController? _controller;
   int _cameraIndex = -1;
   double _currentZoomLevel = 1.0;
   double _minAvailableZoom = 1.0;
@@ -316,7 +318,7 @@ class _CameraViewState extends State<CameraView>implements onDetectedListener  {
     });
   }
 
-  Future _stopLiveFeed() async {
+  static Future _stopLiveFeed() async {
     await _controller?.stopImageStream();
     await _controller?.dispose();
     _controller = null;

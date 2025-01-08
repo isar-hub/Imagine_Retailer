@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:imagine_retailer/config/common_methods.dart';
 import 'package:imagine_retailer/screens/home_activity.dart';
 
+import '../config/ResultState.dart';
+import '../repository/login_repository.dart';
+
 class LoginController extends GetxController {
   late TextEditingController emailController;
   late TextEditingController passwordController;
@@ -11,8 +14,8 @@ class LoginController extends GetxController {
   var loadingBallAppear = false.obs;
   var loadingBallSize = 1.obs;
 
-  var auth = FirebaseAuth.instance;
-
+  final LoginRepository _loginRepository = LoginRepository();
+  final loginState = Result<User?>.initial().obs;
   @override
   void onInit() {
     super.onInit();
@@ -20,36 +23,48 @@ class LoginController extends GetxController {
     passwordController = TextEditingController();
   }
 
+
   @override
   void onReady() {
     super.onReady();
-    isLoggedIn();
+    _checkLoggedInStatus();
   }
 
-  void isLoggedIn() {
-    if (auth.currentUser != null) {
-      Get.offAll(() => HomeActivity(), arguments: auth.currentUser);
+  void _checkLoggedInStatus() async {
+    final currentUser = _loginRepository.getCurrentUser();
+    if (currentUser != null) {
+      final isRetailer = await _loginRepository.checkUserRole(currentUser.uid);
+      if (isRetailer) {
+        Get.offAll(() => HomeActivity(), arguments: currentUser);
+      } else {
+        showError("You do not have the required permissions to access this app.");
+        _loginRepository.signOut();
+      }
     }
   }
 
   Future<void> userLogin() async {
-    var emailAddress = emailController.text.toString();
-    var password = passwordController.text.toString();
+    final emailAddress = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    loginState.value = Result.loading(); // Set state to loading
     try {
-      final credential = await auth.signInWithEmailAndPassword(
-          email: emailAddress, password: password);
-      showSuccess("${credential.user!.email}");
-      Get.off(HomeActivity(), arguments: credential.user);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        showError("Invalid Credentials");
-        print('Invalid Credentials.');
-      } else if (e.code == 'wrong-password') {
-        showError("Wrong password provided for that user.");
-        print('Wrong password provided for that user.');
-      } else {
-        showError("$e");
+      final user = await _loginRepository.signInWithEmailAndPassword(
+          "$emailAddress@imagine.com", password);
+      if (user != null) {
+        final isRetailer = await _loginRepository.checkUserRole(user.uid);
+        if (isRetailer) {
+          loginState.value = Result.success(user); // Set state to success
+          Get.offAll(() => HomeActivity(), arguments: user);
+        } else {
+          loginState.value = Result.error(
+              "You do not have the required permissions to access this app.");
+          _loginRepository.signOut();
+        }
       }
+    } catch (e) {
+      loginState.value = Result.error(e.toString()); // Set state to error
     }
   }
+
 }

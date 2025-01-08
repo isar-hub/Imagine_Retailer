@@ -1,4 +1,4 @@
-import 'package:csc_picker/csc_picker.dart';
+import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter/material.dart';
 
 class AddressPicker extends StatelessWidget {
@@ -22,7 +22,7 @@ class AddressPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CSCPicker(
+    return CSCPickerPlus(
       showStates: true,
       showCities: true,
       flagState: CountryFlag.ENABLE,

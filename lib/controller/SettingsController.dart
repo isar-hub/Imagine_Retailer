@@ -6,32 +6,22 @@ import 'package:get/get.dart';
 import 'package:imagine_retailer/config/ResultState.dart';
 
 import '../models/Users.dart';
+import '../models/user_singleton.dart';
 
 class   SettingsController extends GetxController {
-  var users = Rx<Result<Users>>(Result.loading());
+  var users = Rx<Result<Users>>(Result.initial());
 
   Future<void> fetchUser(String userId) async {
-    try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-          .instance
-          .collection('users')
-          .doc(userId)
-          .get();
+    Users? user = UserSingleton().getUser();
+    log("Fetched user: $user");
 
-      if (snapshot.exists && snapshot.data() != null) {
-        log('${snapshot.data()}');
-        users.value = Result.success(Users.fromJson(snapshot.data()!));
-
-
-      } else {
-        users.value = Result.error("User not found");
-        Get.snackbar('Error', 'User not found');
-      }
-    } catch (e) {
-      users.value = Result.error('Failed to fetch user data: $e');
-      Get.snackbar('Error', 'Failed to fetch user data: $e');
+    if (user != null) {
+      users.value = Result(state: ResultState.SUCCESS, data: user);
+    } else {
+      users.value = Result(state: ResultState.ERROR, message: "User not found");
     }
   }
+
 
   var role = "Retailer".obs; // Default role
   var state = "".obs;
