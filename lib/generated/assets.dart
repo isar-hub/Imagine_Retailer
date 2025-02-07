@@ -6,5 +6,6 @@ class Assets {
   static const String assetsLogoImage = 'assets/logo_image.png';
   static const String iconIcon = 'assets/icon/icon.png';
   static const String catImage = 'assets/cat.jpg';
-
+  static const String assetsLoginLogo = 'assets/login_icon.png';
+  static const String assetsLoader = 'assets/loader-imagine.gif';
 }

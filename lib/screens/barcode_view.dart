@@ -18,11 +18,12 @@ class BarcodeView extends GetView<BarCodeController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => BarCodeController());
     final TextEditingController barcodeController = TextEditingController();
+
     void openScanner() async {
       final result = await Get.to(() => const BarcodeScannerView());
       if (result != null) {
         controller.isBarCode.value = true;
-        barcodeController.text =  result; // Set the scanned barcode in the TextFormField
+        barcodeController.text =  result;
       }
     }
 

@@ -64,6 +64,7 @@ class UserView extends GetView<UserViewController> {
               log(controller.saveCustomer.value.state.toString());
               switch (result.state) {
                 case ResultState.SUCCESS:
+                  showSuccess("Phone Sold");
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Get.off(HomeActivity());
                   });
@@ -322,7 +323,7 @@ Widget buildProductInformation(Product product) => Card(
                 buildProductInfoRow('Model', product.model),
                 buildProductInfoRow('Variant', product.variant),
                 buildProductInfoRow('Condition', product.condition),
-                buildProductInfoRow('Selling Price', '₹ ${product.sellingPrice}'),
+                buildProductInfoRow('Selling Price', '₹ ${product.retailerPrice}'),
                 // buildProductInfoRow('Status', product.status.billed.toString()),
               ],
             ),

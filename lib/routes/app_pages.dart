@@ -1,9 +1,4 @@
-
-
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import '../scanner/mlkit_scanner/barcode_scanner.dart';
 import '../screens/home_activity.dart';

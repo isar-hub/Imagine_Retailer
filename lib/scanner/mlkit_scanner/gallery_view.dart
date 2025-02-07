@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:imagine_retailer/scanner/mlkit_scanner/utils.dart';
 
 
 class GalleryView extends StatefulWidget {
@@ -114,63 +111,63 @@ class _GalleryViewState extends State<GalleryView> {
     }
   }
 
-  Future _getImageAsset() async {
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-    final assets = manifestMap.keys
-        .where((String key) => key.contains('images/'))
-        .where((String key) =>
-    key.contains('.jpg') ||
-        key.contains('.jpeg') ||
-        key.contains('.png') ||
-        key.contains('.webp'))
-        .toList();
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Select image',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.7),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for (final path in assets)
-                            GestureDetector(
-                              onTap: () async {
-                                Navigator.of(context).pop();
-                                _processFile(await getAssetPath(path));
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(path),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel')),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  // Future _getImageAsset() async {
+  //   final manifestContent = await rootBundle.loadString('AssetManifest.json');
+  //   final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+  //   final assets = manifestMap.keys
+  //       .where((String key) => key.contains('images/'))
+  //       .where((String key) =>
+  //   key.contains('.jpg') ||
+  //       key.contains('.jpeg') ||
+  //       key.contains('.png') ||
+  //       key.contains('.webp'))
+  //       .toList();
+  //
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Dialog(
+  //           shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(30.0)),
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(16.0),
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 const Text(
+  //                   'Select image',
+  //                   style: TextStyle(fontSize: 20),
+  //                 ),
+  //                 ConstrainedBox(
+  //                   constraints: BoxConstraints(
+  //                       maxHeight: MediaQuery.of(context).size.height * 0.7),
+  //                   child: SingleChildScrollView(
+  //                     child: Column(
+  //                       children: [
+  //                         for (final path in assets)
+  //                           GestureDetector(
+  //                             onTap: () async {
+  //                               Navigator.of(context).pop();
+  //                               _processFile(await getAssetPath(path));
+  //                             },
+  //                             child: Padding(
+  //                               padding: const EdgeInsets.all(8.0),
+  //                               child: Image.asset(path),
+  //                             ),
+  //                           ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 ElevatedButton(
+  //                     onPressed: () => Navigator.of(context).pop(),
+  //                     child: const Text('Cancel')),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   Future _processFile(String path) async {
     setState(() {

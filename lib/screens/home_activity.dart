@@ -15,7 +15,6 @@ class HomeActivity extends GetView<Homecontroller> {
 
   @override
   Widget build(BuildContext context) {
-    var notificationCount = 05;
     Get.lazyPut(() => Homecontroller());
 
     return SafeArea(

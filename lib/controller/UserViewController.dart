@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -64,27 +63,23 @@ class UserViewController extends GetxController {
   Future<void> uploadCustomerImageAndSignature() async {
     saveCustomer.value = Result.loading();
     try {
-      if (image.value != null && signature.value != null) {
-        final imageUrl =
-            await repository.uploadImage('customers/image/', image.value!);
-        if (imageUrl.state == ResultState.SUCCESS) {
-          final signatureUrl = await repository.uploadSignature(
-              'customers/signature/', signature.value!);
-          if (signatureUrl.state == ResultState.SUCCESS) {
-            var customerDetails =
-                getCustomer(imageUrl.data!, signatureUrl.data!);
-            var result = await repository.saveCustomerDetails(
-                customerDetails, product.serialNumber.toString());
-            saveCustomer.value = result;
-          } else {
-            saveCustomer.value = signatureUrl;
-          }
-        } else {
-          saveCustomer.value = imageUrl;
-        }
-      } else {
-        saveCustomer.value = Result.error("Error in Uploading!!");
+      final imageUrl = await repository.uploadImage('customers/image/', image.value!);
+      if (imageUrl.state != ResultState.SUCCESS) {
+        saveCustomer.value = Result.error("Image upload failed: ${imageUrl.message}");
+        return;
       }
+
+      final signatureUrl = await repository.uploadSignature('customers/signature/', signature.value!);
+      if (signatureUrl.state != ResultState.SUCCESS) {
+        saveCustomer.value = Result.error("Signature upload failed: ${signatureUrl.message}");
+        return;
+      }
+
+      var customerDetails = getCustomer(imageUrl.data!, signatureUrl.data!);
+      print("Customer details: $customerDetails and serial ${product.serialNumber}");
+      var result = await repository.saveCustomerDetails(customerDetails, product.serialNumber.toString());
+
+      saveCustomer.value = result;
     } on FirebaseException catch (e) {
       saveCustomer.value = Result.error('Firebase Error: ${e.message}');
     } catch (e) {
@@ -96,21 +91,17 @@ class UserViewController extends GetxController {
 
   CustomerInfo getCustomer(String imgUrl, String signatureUrl) {
     return CustomerInfo(
-        warrantyEnded: six_months(),
-        warrantyStarted: now(),
-        name: nameController.text,
-        phone: phoneController.text,
-        email: emailController.text,
-        retailerSellingPrice: sellingPriceController.text,
-        address: '${addressController.text}, $city',
-        state: state.value,
-        signatureUrl: signatureUrl,
-        imageUrl: imgUrl,
-        status: ProductStatus(
-            billed: product.status.billed,
-            inventory: product.status.inventory,
-            warranty: product.status.warranty,
-            sold: Timestamp.now()));
+      warrantyEnded: six_months(),
+      warrantyStarted: now(),
+      name: nameController.text,
+      phone: phoneController.text,
+      email: emailController.text,
+      retailerSellingPrice: sellingPriceController.text,
+      address: '${addressController.text}, $city',
+      state: state.value,
+      signatureUrl: signatureUrl,
+      imageUrl: imgUrl,
+    );
   }
 
   bool validateForm(

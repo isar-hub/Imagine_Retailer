@@ -60,6 +60,7 @@ class WarrantyView extends GetView<WarrantyController> {
               final result = controller.updateWarrantyState.value;
               switch (result.state) {
                 case ResultState.SUCCESS:
+                  showSuccess("Warranty Claimed");
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Get.off(HomeActivity());
                   });

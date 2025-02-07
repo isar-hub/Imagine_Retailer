@@ -4,25 +4,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Product {
   String brand;
   String condition;
-  Timestamp createdAt;
+  DateTime createdAt;
   String imei_1;
   String imei_2;
   String model;
   String variant;
-  String sellingPrice;
+  String retailerPrice;
   String serialNumber;
   String retailerOrDistributorId;
   String transactionId;
-  Timestamp warrantyStarted;
-  Timestamp warrantyEnded;
-  ProductStatus status;
+  DateTime warrantyStarted;
+  DateTime warrantyEnded;
+  String status;
 
   Product({
     required this.brand,
     required this.condition,
     required this.model,
     required this.variant,
-    required this.sellingPrice,
+    required this.retailerPrice,
     required this.serialNumber,
     required this.retailerOrDistributorId,
     required this.transactionId,
@@ -36,23 +36,26 @@ class Product {
 
   // Named constructor for creating from JSON
   factory Product.fromJson(Map<String, dynamic> json) {
+
+
     return Product(
       brand: json['brand'] ?? 'Unknown Brand',
       condition: json['condition'] ?? 'Unknown Condition',
       model: json['model'] ?? 'Unknown Model',
       variant: json['variant'] ?? 'Unknown Variant',
-      sellingPrice: json['sellingPrice'] ?? '0',
+      retailerPrice: json['retailerPrice'] ?? '0',
       serialNumber: json['serialNumber'] ?? 'Unknown Serial',
       retailerOrDistributorId: json['retailerOrDistributorId'] ?? 'Unknown',
       transactionId: json['transactionId'] ?? 'Unknown',
       imei_1: json['imei_1'] ?? 'Unknown IMEI1',
       imei_2: json['imei_2'] ?? 'Unknown IMEI2',
-      createdAt: json['createdAt'],
-      warrantyStarted: json['warrantyStarted'],
-      warrantyEnded: json['warrantyEnded'],
-      status: ProductStatus.fromMap(json['status']),
+      createdAt: (json['warrantyStarted'] as Timestamp).toDate(),
+      warrantyStarted: (json['warrantyStarted'] as Timestamp).toDate(),
+      warrantyEnded: (json['warrantyEnded'] as Timestamp).toDate(),
+      status: json['status'],
     );
   }
+
 
   // Convert to JSON
   Map<String, dynamic> toJson() {
@@ -61,7 +64,7 @@ class Product {
       'condition': condition,
       'model': model,
       'variant': variant,
-      'sellingPrice': sellingPrice,
+      'retailerPrice': retailerPrice,
       'serialNumber': serialNumber,
       'retailerOrDistributorId': retailerOrDistributorId,
       'transactionId': transactionId,
@@ -70,7 +73,7 @@ class Product {
       'createdAt': createdAt,
       'warrantyStarted': warrantyStarted,
       'warrantyEnded': warrantyEnded,
-      'status': status.toMap(),
+      'status': status,
     };
   }
 }
@@ -87,10 +90,10 @@ class ProductStatus {
 
   factory ProductStatus.fromMap(Map<String, dynamic> map) {
     return ProductStatus(
-      billed: map['BILLED'],
-      inventory: map['INVENTORY'],
-      warranty: map['WARRANTY'],
-      sold:map['SOLD']
+      billed: parseTimestamp(map['BILLED']),
+      inventory: parseTimestamp(map['INVENTORY']),
+      warranty: parseTimestamp(map['WARRANTY']),
+      sold:parseTimestamp(map['SOLD'])
     );
   }
 
@@ -101,5 +104,14 @@ class ProductStatus {
       'WARRANTY': billed,
       'SOLD':sold,
     };
+  }
+}
+Timestamp parseTimestamp(dynamic value) {
+  if (value is Timestamp) {
+    return value;
+  } else if (value is String) {
+    return Timestamp.fromDate(DateTime.parse(value));
+  } else {
+    throw Exception("Invalid type for Timestamp field");
   }
 }

@@ -1,10 +1,8 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/config/ResultState.dart';
-
 import '../models/Users.dart';
 import '../models/user_singleton.dart';
 

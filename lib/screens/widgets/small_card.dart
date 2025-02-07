@@ -4,28 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:imagine_retailer/config/constants.dart';
 
 class SmallCard extends StatelessWidget {
-
   final IconData logo;
   final String title;
   final String num;
-  const SmallCard({
-    Key? key,
-    required this.logo,
-    required this.title,
-    required this.num,
-  }) : super(key: key);
+
+  final List<Color> colors;
+
+  const SmallCard(
+      {super.key,
+      required this.logo,
+      required this.title,
+      required this.num,
+      this.colors = const [
+        Color(0xFF02aab0), // Start color
+        Color(0xFF00cdac), // End color
+      ]});
+
   @override
   Widget build(BuildContext context) {
-    
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF02aab0), // Start color
-            Color(0xFF00cdac), // End color
-          ],
+        gradient: LinearGradient(
+          colors: colors,
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -34,7 +36,10 @@ class SmallCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(logo,size: 40,),
+          Icon(
+            logo,
+            size: 40,
+          ),
           const SizedBox(height: 8), // Add some space between logo and title
           Text(
             title,

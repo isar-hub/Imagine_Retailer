@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'dart:ui';
-import 'dart:ui' as ui;
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(

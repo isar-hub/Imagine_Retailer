@@ -1,4 +1,3 @@
-import 'package:imagine_retailer/models/Product.dart';
 
 class CustomerInfo {
   String name;
@@ -10,7 +9,7 @@ class CustomerInfo {
   String address;
   String signatureUrl;
   String warrantyStarted;
-  ProductStatus status;
+  // ProductStatus status;
   String warrantyEnded;
 
   CustomerInfo({
@@ -24,7 +23,7 @@ class CustomerInfo {
     required this.imageUrl,
     required this.warrantyEnded,
     required this.warrantyStarted,
-    required this.status,
+    // required this.status,
   });
 
   // Named constructor for creating from JSON
@@ -35,12 +34,12 @@ class CustomerInfo {
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      retailerSellingPrice: json['sellingPrice'] ?? "0.0",
+      imageUrl: json['imageUrl'],
+      retailerSellingPrice: json['retailerSellingPrice'] ?? "0.0",
       address: json['address'],
       state: json['state'] ?? '',
-      signatureUrl: json['signatureUrl'] ?? '',
-      status: ProductStatus.fromMap(json['status']),
+      signatureUrl: json['signatureUrl'],
+      // status: ProductStatus.fromMap(json['status']),
     );
   }
 
@@ -51,13 +50,13 @@ class CustomerInfo {
       'email': email,
       'phone': phone,
       'imageUrl': imageUrl,
-      'sellingPrice': retailerSellingPrice,
+      'retailerSellingPrice': retailerSellingPrice,
       'address': address,
       'state': state,
       'warrantyStarted': warrantyStarted,
       'warrantyEnded': warrantyEnded,
       'signatureUrl': signatureUrl,
-      'status':status.toMap()
+      // 'status':status.toMap(),
     };
   }
 

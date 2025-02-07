@@ -17,19 +17,18 @@ class ErrorPage extends StatelessWidget{
         child: Row(
           children: [
             Expanded(child: Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 
                 children: [
-                  Text('Error 404',style:  TextStyle(fontWeight: FontWeight.bold),),
-                  Text('Hey Buddy',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
-                  Text(message ??"Error Occured",style: TextStyle(fontSize: 12),),
-                  SizedBox(height: 10,),
+                  const Text('Error 404',style:  TextStyle(fontWeight: FontWeight.bold),),
+                  const Text('Hey Buddy',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+                  Text(message ??"Error Occurred",style: const TextStyle(fontSize: 12),),
+                  const SizedBox(height: 10,),
                   ElevatedButton(
                     onPressed: onHomePressed,
-                    child: Text("Go Home",style: TextStyle(color: ImagineColors.white),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ImagineColors.red,
                       padding: const EdgeInsets.symmetric(
@@ -39,7 +38,8 @@ class ErrorPage extends StatelessWidget{
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30), // Circular corners
                       ),
-                    )
+                    ),
+                    child: Text("Go Home",style: TextStyle(color: ImagineColors.white),)
                   )
 
                 ],

@@ -12,19 +12,27 @@ import 'package:imagine_retailer/models/warranty_model.dart';
 
 class FirebaseApi {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance;
+
+  var j = FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
 
   Future<Result<String>> updateWarranty(
       List<Warranty> data, String serialNumber) async {
     try {
-      await FirebaseFirestore.instance
-          .collection("products")
-          .doc(serialNumber)
-          .update(
-              {"warranty": data.map((warranty) => warranty.toMap()).toList()});
+      await firestore.runTransaction((transction) async {
+        final warrantyRef = firestore.collection("warranty").doc(serialNumber);
+        transction.set(warrantyRef, data);
+      });
+
       return Result.success('Warranty Updated Successfully');
     } on FirebaseException catch (e) {
       showError("${e.message}");
       return Result.error(e.message!);
+    } catch (e) {
+      return Result.error('Unexpected Error: $e');
     }
   }
 
@@ -46,36 +54,44 @@ class FirebaseApi {
     }
   }
 
-  Future<Result<String>> saveCustomerDetails(CustomerInfo user, String serialNumber) async {
+  Future<Result<String>> saveCustomerDetails(
+      CustomerInfo user, String serialNumber) async {
     final firestore = FirebaseFirestore.instance;
 
     try {
       // Use a transaction to ensure atomicity
       await firestore.runTransaction((transaction) async {
+        print(
+            "Starting Firestore transaction for serial number: $serialNumber");
+
         // Update customer details
         final customerRef = firestore.collection("customers").doc(serialNumber);
-        transaction.set(customerRef, user.toMap());
+        transaction.set(customerRef, user.toJson());
+        print("Customer details updated in Firestore.");
 
+        final historyEntry = {
+          'status': 'sold',
+          'timestamp': Timestamp.now(),
+        };
         var userUpdate = {
+          'status': 'sold',
           'warrantyStarted': user.warrantyStarted,
           'warrantyEnded': user.warrantyEnded,
-          'status': user.status.toMap(), // Assuming `user.status` is a ProductStatus object
         };
 
         // Update product warranty status
-        final productRef = firestore.collection("all-products").doc(serialNumber);
+        final productRef =
+            firestore.collection("all-products").doc(serialNumber);
         transaction.update(productRef, userUpdate);
       });
 
+      print("Firestore transaction completed successfully.");
       return Result.success('Product Updated Successfully');
-    } on FirebaseException catch (e) {
-      showError("${e.message}");
-      return Result.error(e.message!);
-    } catch (e) {
+    }  catch (e) {
+      print('Catch exception: $e');
       return Result.error('Unexpected Error: $e');
     }
   }
-
 
   Future<Result<String>> uploadImage(String path, XFile image) async {
     try {
@@ -87,7 +103,6 @@ class FirebaseApi {
       showError("${e.message}");
       return Result.error(e.message!);
     }
-
   }
 
   Future<Result<String>> uploadSignature(String path, Uint8List image) async {

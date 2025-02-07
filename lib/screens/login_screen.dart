@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/config/common_methods.dart';
 import 'package:imagine_retailer/config/constants.dart';
@@ -9,6 +10,7 @@ import 'package:imagine_retailer/screens/widgets/email_field.dart';
 import 'package:imagine_retailer/screens/widgets/error_page.dart';
 import '../config/ResultState.dart';
 import '../controller/LoginController.dart';
+import '../generated/assets.dart';
 
 class LoginScreen extends GetView<LoginController>{
 
@@ -37,23 +39,24 @@ class LoginScreen extends GetView<LoginController>{
           }
 
           return  Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 70),
+                  const SizedBox(height: 70),
                   TweenAnimationBuilder<double>(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     tween: Tween(begin: 1, end: controller.elementsOpacity.value),
                     builder: (_, value, __) => Opacity(
                       opacity: value,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.flutter_dash,
-                              size: 60, color: Colors.white70),
-                          const SizedBox(height: 25),
+                          Image.asset(Assets.assetsLoginLogo,height: 60,),
+
+                          // const Icon(Icons.cat,
+                          //     size: 60, color: Colors.white70),
                           const Text(
                             "Welcome,",
                             style: TextStyle(

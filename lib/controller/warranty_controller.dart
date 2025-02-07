@@ -53,7 +53,7 @@ class WarrantyController extends GetxController {
   }
 
   var updateWarrantyState = Rx<Result<String>>(Result.initial());
-  final Uuid uuid = Uuid();
+  final Uuid uuid = const Uuid();
 
   List<Warranty> getWarranty(List<String> urls) =>
       [

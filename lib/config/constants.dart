@@ -4,7 +4,6 @@ class ImagineTheme {
   static ThemeData themeData(BuildContext ctx) {
     final ThemeData base = ThemeData.dark();
     return base.copyWith(
-
       colorScheme: lightColorScheme,
       appBarTheme: appBarTheme,
       bottomAppBarTheme: bottomAppBarTheme,
@@ -19,13 +18,10 @@ class ImagineTheme {
           backgroundColor: Colors.black,
           elevation: 5,
          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-         padding: EdgeInsets.symmetric(horizontal: 50),
-            textStyle: TextStyle(color: Colors.white)
+         padding: const EdgeInsets.symmetric(horizontal: 50),
+            textStyle: const TextStyle(color: Colors.white)
         ),
-
       )
-
-
     );
   }
   static BottomNavigationBarThemeData bottomNavigationBarTheme = BottomNavigationBarThemeData(
