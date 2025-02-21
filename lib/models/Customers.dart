@@ -1,4 +1,6 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CustomerInfo {
   String name;
   String phone;
@@ -8,9 +10,9 @@ class CustomerInfo {
   String state;
   String address;
   String signatureUrl;
-  String warrantyStarted;
+  Timestamp warrantyStarted;
   // ProductStatus status;
-  String warrantyEnded;
+  Timestamp warrantyEnded;
 
   CustomerInfo({
     required this.name,

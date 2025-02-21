@@ -59,7 +59,7 @@ class Transaction_pageLogic extends GetxController {
           bill: (doc['bill'] ?? 0).toDouble(),
           date: (doc['date'] as Timestamp).toDate(),
           from: doc['from'] ?? '',
-          fromDistributorId: doc['fromDistributorId'] as DocumentReference? ?? null, // Handle null case properly
+          fromDistributorId: doc['fromDistributorId'] as DocumentReference?, // Handle null case properly
           serialNumbers: List<String>.from(doc['serialNumbers'] ?? []),
           to: doc['to'] ?? '',
           toEntityId: doc['toEntityId'] as DocumentReference ,

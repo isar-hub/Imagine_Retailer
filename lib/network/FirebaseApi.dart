@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +20,7 @@ class FirebaseApi {
   );
 
   Future<Result<String>> updateWarranty(
-      List<Warranty> data, String serialNumber) async {
+      Warranty data, String serialNumber) async {
     try {
       await firestore.runTransaction((transction) async {
         final warrantyRef = firestore.collection("warranty").doc(serialNumber);
@@ -31,7 +31,13 @@ class FirebaseApi {
     } on FirebaseException catch (e) {
       showError("${e.message}");
       return Result.error(e.message!);
-    } catch (e) {
+    }on SocketException{
+      return Result.error('Network Error');
+    }
+    on TimeoutException{
+      return Result.error('Request timed out');
+    }
+    catch (e) {
       return Result.error('Unexpected Error: $e');
     }
   }
@@ -52,43 +58,68 @@ class FirebaseApi {
       showError("${e.message}");
       return Result.error(e.message!);
     }
+    on SocketException {
+      return Result.error('Network Error');
+    }
+    on TimeoutException{
+      return Result.error('Request timed out');
+    }
+    catch (e) {
+      return Result.error('Unexpected Error: $e');
+    }
   }
 
   Future<Result<String>> saveCustomerDetails(
-      CustomerInfo user, String serialNumber) async {
+      CustomerInfo user, String serialNumber, String transactionNumber) async {
     final firestore = FirebaseFirestore.instance;
 
     try {
       // Use a transaction to ensure atomicity
       await firestore.runTransaction((transaction) async {
-        print(
-            "Starting Firestore transaction for serial number: $serialNumber");
 
-        // Update customer details
         final customerRef = firestore.collection("customers").doc(serialNumber);
         transaction.set(customerRef, user.toJson());
-        print("Customer details updated in Firestore.");
+
 
         final historyEntry = {
           'status': 'sold',
-          'timestamp': Timestamp.now(),
+          'timestamp': Timestamp.now()
         };
         var userUpdate = {
           'status': 'sold',
           'warrantyStarted': user.warrantyStarted,
           'warrantyEnded': user.warrantyEnded,
+          'history': FieldValue.arrayUnion([historyEntry]),
         };
 
         // Update product warranty status
         final productRef =
-            firestore.collection("all-products").doc(serialNumber);
+        firestore.collection("all-products").doc(serialNumber);
         transaction.update(productRef, userUpdate);
+
+        final warrantyRef = firestore.collection("warranty").doc(serialNumber);
+        transaction.set(warrantyRef, {
+          "status": "active",
+          "warrantyStarted":Timestamp.now(),
+          "warrantyEnded": Timestamp.fromDate(DateTime.now().add(const Duration(days: 30 * 6))),
+          "transactionId": transactionNumber,
+          "claims": []
+        });
       });
 
       print("Firestore transaction completed successfully.");
       return Result.success('Product Updated Successfully');
-    }  catch (e) {
-      print('Catch exception: $e');
+    }
+    on SocketException{
+      return Result.error('Network Error: Unable to connect to server');
+    }
+    on TimeoutException {
+      return Result.error('Timeout Error: Server not responding');
+    }
+    on Exception catch(e){
+      return Result.error('Unexpected Error: $e');
+    }
+    catch(e){
       return Result.error('Unexpected Error: $e');
     }
   }
@@ -103,11 +134,20 @@ class FirebaseApi {
       showError("${e.message}");
       return Result.error(e.message!);
     }
+    on SocketException{
+      return Result.error('Network Error: Unable to connect to server');
+    }
+    on TimeoutException catch(e){
+      return Result.error('Timeout Error: Server not responding');
+    }
+    on Exception catch(e){
+      return Result.error('Unexpected Error: $e');
+    }
   }
 
   Future<Result<String>> uploadSignature(String path, Uint8List image) async {
     try {
-      var firebaseRef = FirebaseStorage.instance.ref(path).child(now());
+      var firebaseRef = FirebaseStorage.instance.ref(path).child(now().toString());
       await firebaseRef.putData(image);
       final url = await firebaseRef.getDownloadURL();
       return Result.success(url);
@@ -115,6 +155,15 @@ class FirebaseApi {
       showError("${e.message}");
 
       return Result.error(e.message!);
+    }
+    on SocketException{
+      return Result.error('Network Error: Unable to connect to server');
+    }
+    on TimeoutException {
+      return Result.error('Timeout Error: Server not responding');
+    }
+    on Exception catch(e){
+      return Result.error('Unexpected Error: $e');
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:imagine_retailer/generated/assets.dart';
 import 'package:imagine_retailer/screens/barcode_view.dart';
 import 'package:imagine_retailer/screens/notification_view.dart';
 import 'package:imagine_retailer/screens/settings.dart';
+import 'package:imagine_retailer/screens/widgets/draggable_button.dart';
 
 import '../scanner/mlkit_scanner/barcode_scanner.dart';
 import 'dashboard.dart';
@@ -20,7 +21,12 @@ class HomeActivity extends GetView<Homecontroller> {
     return SafeArea(
       child: Obx(() {
         return Scaffold(
-          body: pages[controller.selectedIndex.value],
+          body: Stack(
+            children: [
+              pages[controller.selectedIndex.value],
+              DraggableButton()
+            ],
+          ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.white,
             shape: const CircleBorder(),

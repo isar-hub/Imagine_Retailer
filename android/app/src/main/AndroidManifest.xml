@@ -14,7 +14,7 @@
     <application
         android:label="Imagine Partners"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/launcher_icon"
  >
         <activity

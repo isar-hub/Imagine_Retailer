@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Warranty {
   String id;
   String reason;
   String reasonDescription;
   List<String> images;
-  String createdAt;
+  Timestamp createdAt;
 
   Warranty(
       {required this.id,

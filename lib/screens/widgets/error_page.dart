@@ -45,7 +45,7 @@ class ErrorPage extends StatelessWidget{
                 ],
               ),
             ),),
-            Expanded(child:Image.asset(Assets.catImage ))
+            Expanded(child:Image.asset(Assets.assetsCat ))
 
 
           ],

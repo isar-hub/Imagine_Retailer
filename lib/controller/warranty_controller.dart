@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/models/warranty_model.dart';
+import 'package:imagine_retailer/repository/warranty_repository.dart';
 import 'package:uuid/uuid.dart';
 
 import '../config/ResultState.dart';
@@ -12,6 +13,7 @@ import '../network/FirebaseApi.dart';
 
 class WarrantyController extends GetxController {
   final repository = FirebaseApi();
+  final warrantyRepo = WarrantyRepository();
   var reasonController = TextEditingController();
   var reasonDescriptionController = TextEditingController();
   var invoiceImage = Rx<XFile?>(null);
@@ -55,26 +57,31 @@ class WarrantyController extends GetxController {
   var updateWarrantyState = Rx<Result<String>>(Result.initial());
   final Uuid uuid = const Uuid();
 
-  List<Warranty> getWarranty(List<String> urls) =>
-      [
-        Warranty(
-            id: uuid.v4(),
-            reason: reasonController.text,
-            reasonDescription: reasonDescriptionController.text,
-            images: urls,
-            createdAt: now()
-        )
-      ];
+  Warranty getWarranty(List<String> urls) => Warranty(
+      id: uuid.v4(),
+      reason: reasonController.text,
+      reasonDescription: reasonDescriptionController.text,
+      images: urls,
+      createdAt: Timestamp.now()
+  );
 
   Future<void> updateWarranty() async {
     updateWarrantyState.value = Result.loading();
 
-    // Ensure all images are combined
+// Check if warranty can be claimed
+    if (!await warrantyRepo.canClaimWarranty(product.serialNumber)) {
+      updateWarrantyState.value =
+          Result.error('Error: Warranty already claimed or expired');
+      return;
+    }
+
+    // Add invoice image if provided
     if (invoiceImage.value != null) {
       productImages.value!.add(invoiceImage.value!);
     }
 
-    if (productImages.value == null || productImages.value!.isEmpty) {
+    // Ensure at least one image exists
+    if ((productImages.value ?? []).isEmpty) {
       updateWarrantyState.value = Result.error('Error: Please add images');
       return;
     }
@@ -91,7 +98,8 @@ class WarrantyController extends GetxController {
         final warranty = getWarranty(images.data!);
 
         // Step 3: Update Warranty in Backend
-        await repository.updateWarranty(warranty, product.serialNumber.toString());
+        await warrantyRepo.claimWarranty(
+            warranty, product.serialNumber.toString());
 
         // Success State
         updateWarrantyState.value =
@@ -101,7 +109,8 @@ class WarrantyController extends GetxController {
         updateWarrantyState.value =
             Result.error('Image Upload Error: ${images.message}');
       }
-    } on FirebaseException catch (e) {
+    }
+    on FirebaseException catch (e) {
       updateWarrantyState.value = Result.error('Firebase Error: ${e.message}');
     } catch (e) {
       updateWarrantyState.value = Result.error('Unexpected Error: $e');

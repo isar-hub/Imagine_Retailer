@@ -2,10 +2,14 @@
 class Assets {
   Assets._();
 
+  static const String assetsCat = 'assets/cat.jpg';
+  static const String assetsCatChat = 'assets/catChat.png';
+  static const String assetsInventory = 'assets/inventory.png';
+  static const String assetsLoaderImagine = 'assets/loader-imagine.gif';
+  static const String assetsLoginIcon = 'assets/login_icon.png';
   static const String assetsLogo = 'assets/logo.svg';
   static const String assetsLogoImage = 'assets/logo_image.png';
   static const String iconIcon = 'assets/icon/icon.png';
-  static const String catImage = 'assets/cat.jpg';
-  static const String assetsLoginLogo = 'assets/login_icon.png';
-  static const String assetsLoader = 'assets/loader-imagine.gif';
+  static const String imagineRetailerAssetsLoginIcon = 'assets/login_icon.png';
+
 }

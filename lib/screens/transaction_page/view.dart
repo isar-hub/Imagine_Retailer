@@ -90,7 +90,7 @@ class Transaction_pageComponent extends StatelessWidget {
                       // print(
                       //     "Index: $index, Serial Numbers: ${row.serialNumbers.length}, isEmpty: ${row.serialNumbers.isEmpty}");
                       if (controller.isLoading.value) {
-                        return Image.asset(Assets.assetsLoader);
+                        return Image.asset(Assets.assetsLoaderImagine);
                       }
                       return TransactionReceipt(
                         transaction: row,

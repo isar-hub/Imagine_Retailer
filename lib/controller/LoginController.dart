@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/config/common_methods.dart';
+import 'package:imagine_retailer/routes/app_pages.dart';
 import 'package:imagine_retailer/screens/home_activity.dart';
+import 'package:imagine_retailer/screens/login_screen.dart';
 
 import '../config/ResultState.dart';
 import '../repository/login_repository.dart';
@@ -40,6 +42,9 @@ class LoginController extends GetxController {
         showError("You do not have the required permissions to access this app.");
         _loginRepository.signOut();
       }
+    }
+    else{
+      Get.offAllNamed(AppPages.LOGIN);
     }
   }
 

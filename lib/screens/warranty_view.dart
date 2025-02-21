@@ -133,7 +133,7 @@ class WarrantyView extends GetView<WarrantyController> {
   }
 
 // Helper Widget: Elevated Button
-  Widget _buildButton(String label, {bool isSingleImage = true}) {
+  Widget _buildButton(String label) {
     return ElevatedButton(
       onPressed: () => Get.bottomSheet(
         BottomSheet(

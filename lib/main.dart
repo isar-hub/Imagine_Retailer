@@ -5,6 +5,7 @@ import 'MyApp.dart';
 import 'firebase_options.dart';
 late final FirebaseApp app;
 late final FirebaseAuth auth;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   app = await Firebase.initializeApp(

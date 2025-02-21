@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
@@ -9,12 +8,13 @@ class Product {
   String imei_2;
   String model;
   String variant;
+  String mrp;
   String retailerPrice;
   String serialNumber;
   String retailerOrDistributorId;
   String transactionId;
-  DateTime warrantyStarted;
-  DateTime warrantyEnded;
+  DateTime? warrantyStarted;
+  DateTime? warrantyEnded;
   String status;
 
   Product({
@@ -29,15 +29,14 @@ class Product {
     required this.imei_1,
     required this.imei_2,
     required this.createdAt,
-    required this.warrantyStarted,
-    required this.warrantyEnded,
+    required this.mrp,
+    this.warrantyStarted,
+    this.warrantyEnded,
     required this.status,
   });
 
   // Named constructor for creating from JSON
   factory Product.fromJson(Map<String, dynamic> json) {
-
-
     return Product(
       brand: json['brand'] ?? 'Unknown Brand',
       condition: json['condition'] ?? 'Unknown Condition',
@@ -49,13 +48,15 @@ class Product {
       transactionId: json['transactionId'] ?? 'Unknown',
       imei_1: json['imei_1'] ?? 'Unknown IMEI1',
       imei_2: json['imei_2'] ?? 'Unknown IMEI2',
-      createdAt: (json['warrantyStarted'] as Timestamp).toDate(),
-      warrantyStarted: (json['warrantyStarted'] as Timestamp).toDate(),
-      warrantyEnded: (json['warrantyEnded'] as Timestamp).toDate(),
+      createdAt: (json['warrantyStarted'] as Timestamp?)?.toDate() ??
+          DateTime(0), // ✅ Correct field and safe null check
+      warrantyStarted: (json['warrantyStarted'] as Timestamp?)
+          ?.toDate(), // ✅ Null-safe conversion
+      warrantyEnded: (json['warrantyEnded'] as Timestamp?)?.toDate(), //
       status: json['status'],
+      mrp: json['mrp'],
     );
   }
-
 
   // Convert to JSON
   Map<String, dynamic> toJson() {
@@ -85,16 +86,14 @@ class ProductStatus {
   Timestamp? warranty;
   Timestamp? sold;
 
-  ProductStatus({this.billed, this.inventory,this.warranty,this
-  .sold});
+  ProductStatus({this.billed, this.inventory, this.warranty, this.sold});
 
   factory ProductStatus.fromMap(Map<String, dynamic> map) {
     return ProductStatus(
-      billed: parseTimestamp(map['BILLED']),
-      inventory: parseTimestamp(map['INVENTORY']),
-      warranty: parseTimestamp(map['WARRANTY']),
-      sold:parseTimestamp(map['SOLD'])
-    );
+        billed: parseTimestamp(map['BILLED']),
+        inventory: parseTimestamp(map['INVENTORY']),
+        warranty: parseTimestamp(map['WARRANTY']),
+        sold: parseTimestamp(map['SOLD']));
   }
 
   Map<String, dynamic> toMap() {
@@ -102,10 +101,11 @@ class ProductStatus {
       'BILLED': billed,
       'INVENTORY': inventory,
       'WARRANTY': billed,
-      'SOLD':sold,
+      'SOLD': sold,
     };
   }
 }
+
 Timestamp parseTimestamp(dynamic value) {
   if (value is Timestamp) {
     return value;

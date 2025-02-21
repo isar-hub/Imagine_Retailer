@@ -77,7 +77,7 @@ class UserViewController extends GetxController {
 
       var customerDetails = getCustomer(imageUrl.data!, signatureUrl.data!);
       print("Customer details: $customerDetails and serial ${product.serialNumber}");
-      var result = await repository.saveCustomerDetails(customerDetails, product.serialNumber.toString());
+      var result = await repository.saveCustomerDetails(customerDetails, product.serialNumber.toString(),product.transactionId);
 
       saveCustomer.value = result;
     } on FirebaseException catch (e) {
@@ -85,14 +85,15 @@ class UserViewController extends GetxController {
     } catch (e) {
       saveCustomer.value = Result.error('Unexpected Error: $e');
     }
+
   }
 
   var saveCustomer = Rx<Result<String>>(Result.initial());
 
   CustomerInfo getCustomer(String imgUrl, String signatureUrl) {
     return CustomerInfo(
-      warrantyEnded: six_months(),
-      warrantyStarted: now(),
+      warrantyEnded:  Timestamp.fromDate(DateTime.now().add(const Duration(days: 30 * 6))),
+      warrantyStarted:Timestamp.now(),
       name: nameController.text,
       phone: phoneController.text,
       email: emailController.text,

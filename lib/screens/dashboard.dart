@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:imagine_retailer/controller/HomeController.dart';
 import 'package:imagine_retailer/models/CharData.dart';
+import 'package:imagine_retailer/screens/all_inventory/view.dart';
 import 'package:imagine_retailer/screens/widgets/LabelCard.dart';
 import 'package:imagine_retailer/screens/widgets/small_card.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -49,14 +50,19 @@ class DashboardPage extends GetView<Homecontroller> {
                       return Row(
                         children: [
                           // Add SmallCards for total quantity and total brands count
-                          SmallCard(
-                            logo: Icons.bar_chart,
-                            title: 'Total Quantity',
-                            num: totalQuantity.toString(),
-                            colors: [
-                              Colors.black12,
-                              Colors.red.shade900,
-                            ],
+                          GestureDetector(
+                            onTap: (){
+                              Get.to(()=>  All_inventoryComponent(product: controller.products.value.data!, isLoading: false,));
+                            },
+                            child: SmallCard(
+                              logo: Icons.bar_chart,
+                              title: 'Total Quantity',
+                              num: totalQuantity.toString(),
+                              colors: [
+                                Colors.black12,
+                                Colors.red.shade900,
+                              ],
+                            ),
                           ),
                           SmallCard(
                             logo: Icons.branding_watermark,

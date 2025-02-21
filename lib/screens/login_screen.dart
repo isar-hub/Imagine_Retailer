@@ -53,7 +53,7 @@ class LoginScreen extends GetView<LoginController>{
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(Assets.assetsLoginLogo,height: 60,),
+                          Image.asset(Assets.assetsLoginIcon,height: 60,),
 
                           // const Icon(Icons.cat,
                           //     size: 60, color: Colors.white70),
