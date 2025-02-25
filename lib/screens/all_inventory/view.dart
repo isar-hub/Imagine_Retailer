@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:imagine_retailer/controller/HomeController.dart';
 import 'package:imagine_retailer/models/Product.dart';
+import 'package:imagine_retailer/screens/product_details/view.dart';
 
+import '../../config/common_methods.dart';
 import '../../generated/assets.dart';
 import 'logic.dart';
 
@@ -74,23 +76,9 @@ class ProductCard extends StatelessWidget {
 
   final Product product;
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'silver':
-        return Colors.grey;
-      case 'gold':
-        return Colors.yellow;
-      case 'platinum':
-        return Colors.black38;
-      default:
-        return Colors.blue; // Default status color
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
-
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
@@ -124,7 +112,7 @@ class ProductCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(product.condition).withOpacity(0.9),
+                    color: getStatusColor(product.condition).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -188,13 +176,24 @@ class ProductCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Expanded(
+              //   child: Text(
+              //     '₹${product.mrp}',
+              //     style: const TextStyle(
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.bold,
+              //       decoration: TextDecoration.lineThrough, // Strike-through price
+              //       color: Colors.grey, // Discounted price color
+              //     ),
+              //   ),
+              // ),
               Expanded(
                 child: Text(
                   '₹${product.retailerPrice}',
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.lineThrough, // Strike-through price
+                    // decoration: TextDecoration.lineThrough, // Strike-through price
                     color: Colors.red, // Discounted price color
                   ),
                 ),
@@ -203,7 +202,7 @@ class ProductCard extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     // Handle button click
-                    // Get.to(() => ProductDetailsScreen(product: product));
+                    Get.to(() => Product_detailsComponent(productDetails: product,));
                   },
                   label: const Text(
                     'Details',

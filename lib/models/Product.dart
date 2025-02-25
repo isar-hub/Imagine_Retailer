@@ -16,6 +16,7 @@ class Product {
   DateTime? warrantyStarted;
   DateTime? warrantyEnded;
   String status;
+  List<ProductStatusHistory> history;
 
   Product({
     required this.brand,
@@ -33,10 +34,16 @@ class Product {
     this.warrantyStarted,
     this.warrantyEnded,
     required this.status,
+    required this.history,
   });
 
   // Named constructor for creating from JSON
   factory Product.fromJson(Map<String, dynamic> json) {
+    var historyList = json['history'] as List<dynamic>? ?? [];
+    List<ProductStatusHistory> statusHistoryList = historyList
+        .map((item) => ProductStatusHistory.fromJson(item as Map<String, dynamic>))
+        .toList();
+
     return Product(
       brand: json['brand'] ?? 'Unknown Brand',
       condition: json['condition'] ?? 'Unknown Condition',
@@ -48,16 +55,14 @@ class Product {
       transactionId: json['transactionId'] ?? 'Unknown',
       imei_1: json['imei_1'] ?? 'Unknown IMEI1',
       imei_2: json['imei_2'] ?? 'Unknown IMEI2',
-      createdAt: (json['warrantyStarted'] as Timestamp?)?.toDate() ??
-          DateTime(0), // ✅ Correct field and safe null check
-      warrantyStarted: (json['warrantyStarted'] as Timestamp?)
-          ?.toDate(), // ✅ Null-safe conversion
-      warrantyEnded: (json['warrantyEnded'] as Timestamp?)?.toDate(), //
-      status: json['status'],
-      mrp: json['mrp'],
+      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime(0),
+      warrantyStarted: (json['warrantyStarted'] as Timestamp?)?.toDate(),
+      warrantyEnded: (json['warrantyEnded'] as Timestamp?)?.toDate(),
+      status: json['status'] ?? 'Unknown',
+      mrp: json['mrp'] ?? '0',
+      history: statusHistoryList,
     );
   }
-
   // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -75,34 +80,55 @@ class Product {
       'warrantyStarted': warrantyStarted,
       'warrantyEnded': warrantyEnded,
       'status': status,
-    };
+      'history': history.map((history) => history.toJson()).toList(),    };
   }
 }
 
-// ProductStatus class to parse the status map
-class ProductStatus {
-  Timestamp? billed;
-  Timestamp? inventory;
-  Timestamp? warranty;
-  Timestamp? sold;
 
-  ProductStatus({this.billed, this.inventory, this.warranty, this.sold});
 
-  factory ProductStatus.fromMap(Map<String, dynamic> map) {
-    return ProductStatus(
-        billed: parseTimestamp(map['BILLED']),
-        inventory: parseTimestamp(map['INVENTORY']),
-        warranty: parseTimestamp(map['WARRANTY']),
-        sold: parseTimestamp(map['SOLD']));
+class ProductStatusHistory {
+  String status;
+  DateTime timestamp;
+
+  ProductStatusHistory({
+    required this.status,
+    required this.timestamp,
+  });
+
+  factory ProductStatusHistory.fromJson(Map<String, dynamic> map) {
+    return ProductStatusHistory(
+      status: map['status'] as String? ?? 'UNKNOWN',
+      timestamp:(map['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0),
+    );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'BILLED': billed,
-      'INVENTORY': inventory,
-      'WARRANTY': billed,
-      'SOLD': sold,
+      'status': status,
+      'timestamp': timestamp,
     };
+  }
+
+  static Timestamp _parseTimestamp(dynamic value) {
+    if (value is Timestamp) {
+      return value;
+    }
+    if (value is String) {
+      final dateTime = DateTime.tryParse(value);
+      return dateTime != null
+          ? Timestamp.fromDate(dateTime)
+          : Timestamp.now();
+    }
+    if (value is int) {
+      return Timestamp.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is Map) {
+      return Timestamp(
+        value['_seconds'] as int? ?? 0,
+        value['_nanoseconds'] as int? ?? 0,
+      );
+    }
+    return Timestamp.now();
   }
 }
 

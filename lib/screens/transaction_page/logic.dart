@@ -53,7 +53,7 @@ class Transaction_pageLogic extends GetxController {
 
       // Map the documents to Transaction objects
       final transactionList = snapshot.docs.map((doc) {
-        print(doc.data());
+        // print(doc.data());
         return t.Transaction(
           id: doc.id,
           bill: (doc['bill'] ?? 0).toDouble(),
@@ -65,8 +65,8 @@ class Transaction_pageLogic extends GetxController {
           toEntityId: doc['toEntityId'] as DocumentReference ,
         );
       }).toList();
-      print(transactionList[0].toEntityId);
-      transactions.value = transactionList;
+       transactions.value = transactionList;
+      transactions.sort((a, b) => b.id.compareTo(a.id));
       filteredTransactions.value = transactionList;
     } catch (e) {
       error.value = 'Error fetching transactions: $e';
@@ -93,7 +93,7 @@ class Transaction_pageLogic extends GetxController {
       filteredTransactions.value = transactions.where((transaction) {
         final search = value.toLowerCase();
         return transaction.id.toLowerCase().contains(search) ||
-            transaction.serialNumbers.any((serial) => serial!.toLowerCase().contains(search)) ||
+            transaction.serialNumbers.any((serial) => serial.toLowerCase().contains(search)) ||
             transaction.from.toLowerCase().contains(search) ||
             transaction.to.toLowerCase().contains(search);
 

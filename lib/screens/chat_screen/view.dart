@@ -2,7 +2,10 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
+import 'package:imagine_retailer/config/common_methods.dart';
+import 'package:imagine_retailer/screens/chat_screen/customMarkdown.dart';
 import 'package:imagine_retailer/screens/chat_screen/typing_loader.dart';
 
 import '../../generated/assets.dart';
@@ -50,8 +53,8 @@ class Chat_screenComponent extends StatelessWidget {
             child: Obx(() {
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: logic.messages.length +
-                    (logic.isLoading.value ? 1 : 0),
+                itemCount:
+                    logic.messages.length + (logic.isLoading.value ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == logic.messages.length && logic.isLoading.value) {
                     return Align(
@@ -60,8 +63,10 @@ class Chat_screenComponent extends StatelessWidget {
                     );
                   }
                   return Obx(() {
-                    return _ChatBubble(message: logic.messages[index],
-                      isTyping: logic.isLoading.value && index ==  logic.messages.length - 1,
+                    return _ChatBubble(
+                      message: logic.messages[index],
+                      isTyping: logic.isLoading.value &&
+                          index == logic.messages.length - 1,
                     );
                   });
                 },
@@ -89,74 +94,76 @@ class _ChatBubble extends StatelessWidget {
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
-        onLongPress: (){
+        onLongPress: () {
           Clipboard.setData(ClipboardData(text: message.message));
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Copied to clipboard')),
-          );
         },
         child: Container(
-          margin: EdgeInsets.only(
-            bottom: 16,
-            left: message.isUser ? 64 : 0,
-            right: message.isUser ? 0 : 64,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: message.isUser ? Colors.red : Colors.grey[200],
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: (isTyping && !message.isUser)
-              ? WavyTypingIndicator() // Wavy text animation
-              : AnimatedTextKit(
-            key: ValueKey(message.message),
-            animatedTexts: [
-              TypewriterAnimatedText(
-                message.message,
-                textStyle: TextStyle(
-                  color: message.isUser ? Colors.white : Colors.black,
-                  fontSize: 12,
-                ),
-                speed: const Duration(milliseconds: 12),
-              )
-            ],
-            repeatForever: false,
-            totalRepeatCount: 1,
-            isRepeatingAnimation: false,
-          ),
-          // child: Column(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     Text(
-          //       message.message,
-          //       style: TextStyle(
-          //         color: message.isUser ? Colors.white : Colors.black,
-          //         fontSize: 16,
-          //       ),
-          //     ),
-          //     const SizedBox(height: 4),
-          //     Row(
-          //       children: [
-          //         Text(
-          //           _formatTime(message.timestamp),
-          //           style: TextStyle(
-          //             color: (message.isUser ?? false)
-          //                 ? Colors.white70
-          //                 : Colors.grey,
-          //             fontSize: 12,
-          //           ),
-          //         ),
-          //         const Spacer(),
-          //         if (!(message.isUser))
-          //           CircleAvatar(
-          //             backgroundColor: Colors.red,
-          //             child: Image.asset(Assets.assetsCatChat),
-          //           ),
-          //       ],
-          //     )
-          //   ],
-          // ),
-        ),
+            margin: EdgeInsets.only(
+              bottom: 16,
+              left: message.isUser ? 64 : 0,
+              right: message.isUser ? 0 : 64,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: message.isUser ? Colors.red : Colors.grey[200],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: (isTyping && !message.isUser)
+                ? WavyTypingIndicator()
+                : CustomMarkdown(
+                    data: message.message, textColor: message.isUser ? Colors.white : Colors.black, secondaryColor: Colors.black, backgroundColor: Colors.grey, isDarkMode: false,
+
+                  )
+
+            //     : AnimatedTextKit(
+            //   key: ValueKey(message.message),
+            //   animatedTexts: [
+            //     TypewriterAnimatedText(
+            //       message.message,
+            //       textStyle: TextStyle(
+            //         color: message.isUser ? Colors.white : Colors.black,
+            //         fontSize: 12,
+            //       ),
+            //       speed: const Duration(milliseconds: 12),
+            //     )
+            //   ],
+            //   repeatForever: false,
+            //   totalRepeatCount: 1,
+            //   isRepeatingAnimation: false,
+            // ),
+            // child: Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Text(
+            //       message.message,
+            //       style: TextStyle(
+            //         color: message.isUser ? Colors.white : Colors.black,
+            //         fontSize: 16,
+            //       ),
+            //     ),
+            //     const SizedBox(height: 4),
+            //     Row(
+            //       children: [
+            //         Text(
+            //           _formatTime(message.timestamp),
+            //           style: TextStyle(
+            //             color: (message.isUser ?? false)
+            //                 ? Colors.white70
+            //                 : Colors.grey,
+            //             fontSize: 12,
+            //           ),
+            //         ),
+            //         const Spacer(),
+            //         if (!(message.isUser))
+            //           CircleAvatar(
+            //             backgroundColor: Colors.red,
+            //             child: Image.asset(Assets.assetsCatChat),
+            //           ),
+            //       ],
+            //     )
+            //   ],
+            // ),
+            ),
       ),
     );
   }
@@ -216,9 +223,7 @@ class _ChatInput extends StatelessWidget {
                   if (logic.isLoading.value) {
                     return;
                   }
-                  if (_controller.text
-                      .trim()
-                      .isNotEmpty) {
+                  if (_controller.text.trim().isNotEmpty) {
                     logic.sendMessage(_controller.text.trim());
                     _controller.clear();
                   }
@@ -228,5 +233,4 @@ class _ChatInput extends StatelessWidget {
       ),
     );
   }
-
 }

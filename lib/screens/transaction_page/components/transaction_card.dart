@@ -92,19 +92,22 @@ class TransactionReceipt extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'From',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'From',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        "REDCAT",
+                    ),
+                    const SizedBox(height: 4),
+                    if (transaction.fromDistributorId == null) ...[
+                      Text(
+                        transaction.from == "admin"
+                            ? "RedCat"
+                            : transaction.from.toUpperCase(),
                         style: TextStyle(
                             fontWeight: FontWeight.w500, color: Colors.black),
                       ),
@@ -115,48 +118,57 @@ class TransactionReceipt extends StatelessWidget {
                           fontSize: 12,
                         ),
                       ),
-                      // FutureBuilder<DocumentSnapshot>(
-                      //   future:transaction.fromDistributorId != null ? transaction.fromDistributorId?.get() :  Future.value(null), // Fetch document
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.connectionState == ConnectionState.waiting) {
-                      //       return Text(
-                      //         "Loading...",
-                      //         style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      //       );
-                      //     }
-                      //
-                      //     if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-                      //       return const Text("Admin", style: TextStyle(fontWeight: FontWeight.bold)); // Default to Admin
-                      //     }
-                      //
-                      //     // Extract data
-                      //
-                      //     var userData = snapshot.data!.data() as Map<String, dynamic>;
-                      //     String userName = userData['name'] ?? "No Name";
-                      //     String userRole = userData['role'] ?? "No Role";
-                      //
-                      //     return Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.start,
-                      //       children: [
-                      //         Text(
-                      //           userName,
-                      //           style: const TextStyle(
-                      //               fontWeight: FontWeight.w500, color: Colors.black),
-                      //         ),
-                      //         Text(
-                      //         userRole,
-                      //           style: TextStyle(
-                      //             color: Colors.grey[600],
-                      //             fontSize: 12,
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     );
-                      //   },
-                      // )
+                    ] else ...[
+                      FutureBuilder<DocumentSnapshot>(
+                        future: transaction.fromDistributorId
+                            ?.get(), // Fetch document
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              "Loading...",
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 12),
+                            );
+                          }
+
+                          if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data == null) {
+                            return const Text("Unknown Distributor",
+                                style: TextStyle(fontWeight: FontWeight.bold));
+                          }
+
+                          // Extract data
+
+                          var userData =
+                              snapshot.data!.data() as Map<String, dynamic>;
+                          String userName = userData['name'] ?? "No Name";
+                          String userRole = userData['role'] ?? "No Role";
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                              Text(
+                                userRole,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      )
                     ],
-                  ),
-                ),
+                  ],
+                )),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(

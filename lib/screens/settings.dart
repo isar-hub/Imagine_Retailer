@@ -8,11 +8,10 @@ import 'package:imagine_retailer/screens/transaction_page/view.dart';
 import 'package:imagine_retailer/screens/widgets/display_image.dart';
 
 import '../controller/SettingsController.dart';
+import '../routes/app_pages.dart';
 import 'edit_profile.dart';
 
 class SettingsPage extends GetView<SettingsController> {
-
-
   const SettingsPage({super.key});
 
   @override
@@ -39,23 +38,26 @@ class SettingsPage extends GetView<SettingsController> {
   Widget buildUserNotEmpty(Users user) => Column(
         children: [
           const SizedBox(height: 10),
-
           GestureDetector(
-            onTap: ()=> Get.to(EditProfile(
+            onTap: () => Get.to(EditProfile(
               user: user,
             )),
-            child:  buildUserInfoSection(user),
+            child: buildUserInfoSection(user),
           ),
           const SizedBox(height: 20),
           GestureDetector(
-            onTap: ()=> Get.to(()=>Transaction_pageComponent(user: user,)),
-            child:  buildTraButton('Transactions', Icons.history, user) ,
+            onTap: () => Get.to(() => Transaction_pageComponent(
+                  user: user,
+                )),
+            child: buildTraButton('Transactions', Icons.history, user),
           ),
           GestureDetector(
-            onTap: ()=> Get.to(LoginScreen()),
-            child:  buildButton('SignOut', Icons.logout, user),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Get.offAllNamed(AppPages.LOGIN);
+            },
+            child: buildButton('SignOut', Icons.logout, user),
           ),
-
         ],
       );
 
@@ -82,30 +84,32 @@ class SettingsPage extends GetView<SettingsController> {
           ),
         ),
       ], user);
-  Widget buildTraButton(String text, IconData icon, Users user) => SettingsCard([
-    Expanded(
-        flex: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(text,
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold)),
-        )),
-    Expanded(
-      child: IconButton(
-        onPressed: () {
-          Get.to(()=> Transaction_pageComponent(user: user,));
-        },
-        icon: Icon(icon, color: Colors.black),
-      ),
-    ),
-  ], user);
+  Widget buildTraButton(String text, IconData icon, Users user) =>
+      SettingsCard([
+        Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(text,
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold)),
+            )),
+        Expanded(
+          child: IconButton(
+            onPressed: () {
+              Get.to(() => Transaction_pageComponent(
+                    user: user,
+                  ));
+            },
+            icon: Icon(icon, color: Colors.black),
+          ),
+        ),
+      ], user);
 
   // User Info Section with Profile Image and Display Name
   Widget buildUserInfoSection(Users user) {
-
     final imagePath = (user.image != null && user.image!.isNotEmpty)
         ? user.image!
         : "https://avatar.iran.liara.run/username?username=${user.name ?? 'Guest'}";
@@ -140,19 +144,20 @@ class SettingsPage extends GetView<SettingsController> {
                   color: Colors.grey),
             ),
             const Spacer(),
-            const Icon(Icons.keyboard_arrow_right, color: Colors.grey, size: 40.0),
+            const Icon(Icons.keyboard_arrow_right,
+                color: Colors.grey, size: 40.0),
           ],
         ),
       );
 
   // SettingsCard widget with tap functionality to navigate to EditProfile screen
   Widget SettingsCard(List<Widget> children, Users user) => Card(
-    color: Colors.white,
-    child: Row(
-      children: children,
-      mainAxisAlignment: MainAxisAlignment.end,
-    ),
-  );
+        color: Colors.white,
+        child: Row(
+          children: children,
+          mainAxisAlignment: MainAxisAlignment.end,
+        ),
+      );
 
   // About section, displaying user's creation date
   Widget buildAbout(User user) {

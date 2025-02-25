@@ -23,8 +23,8 @@ class LoginController extends GetxController {
     super.onInit();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    print('LoginController initialized, state: ${loginState.value}');
   }
-
 
   @override
   void onReady() {
@@ -39,11 +39,14 @@ class LoginController extends GetxController {
       if (isRetailer) {
         Get.offAll(() => HomeActivity(), arguments: currentUser);
       } else {
-        showError("You do not have the required permissions to access this app.");
-        _loginRepository.signOut();
+        showError(
+            "You do not have the required permissions to access this app.");
+        await _loginRepository.signOut();
+        if (Get.currentRoute != AppPages.LOGIN) {
+          Get.offAllNamed(AppPages.LOGIN);
+        }
       }
-    }
-    else{
+    } else if (Get.currentRoute != AppPages.LOGIN) {
       Get.offAllNamed(AppPages.LOGIN);
     }
   }
@@ -62,9 +65,9 @@ class LoginController extends GetxController {
           loginState.value = Result.success(user); // Set state to success
           Get.offAll(() => HomeActivity(), arguments: user);
         } else {
+          _loginRepository.signOut();
           loginState.value = Result.error(
               "You do not have the required permissions to access this app.");
-          _loginRepository.signOut();
         }
       }
     } catch (e) {
@@ -72,4 +75,10 @@ class LoginController extends GetxController {
     }
   }
 
+  // @override
+  // void onClose() {
+  //   emailController.dispose();
+  //   passwordController.dispose();
+  //   super.onClose();
+  // }
 }

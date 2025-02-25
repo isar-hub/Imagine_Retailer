@@ -12,6 +12,8 @@ import 'package:imagine_retailer/screens/widgets/LabelCard.dart';
 import 'package:imagine_retailer/screens/widgets/small_card.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../config/common_methods.dart';
+
 class DashboardPage extends GetView<Homecontroller> {
   const DashboardPage({super.key});
 
@@ -198,5 +200,3 @@ Color getColor(CharData data) {
     return Colors.yellowAccent; // Replace with your default color
   }
 }
-Color getRandomColor() =>
-    Color((random.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);

@@ -19,6 +19,22 @@ class Chat_screenLogic extends GetxController {
     return currentUser!.uid;
 
   }
+  final String markdownData = '''
+There is 1 claim for the phone with serial number **IMG776097751**.
+
+### Claim Details:
+- **Claimed At:** February 20, 2025
+- **Reason:** Phone is broken
+- **Description:** The touchpad is not working
+- **Status:** Pending
+- **Images:**
+  - ![Image 1](https://firebasestorage.googleapis.com/v0/b/imagine-bc615.appspot.com/o/customers%2Fwarranty%2F1000001849.jpg?alt=media&token=8593d1bb-df10-41a1-88c6-033af0e2aa2d)
+  - ![Image 2](https://firebasestorage.googleapis.com/v0/b/imagine-bc615.appspot.com/o/customers%2Fwarranty%2F1000001848.jpg?alt=media&token=5719cda6-655b-4389-83df-8900a27ad89e)
+  - ![Image 3](https://firebasestorage.googleapis.com/v0/b/imagine-bc615.appspot.com/o/customers%2Fwarranty%2F1000001847.jpg?alt=media&token=de355c03-691a-4fe4-ae91-09c67defdbce)
+  - ![Image 4](https://firebasestorage.googleapis.com/v0/b/imagine-bc615.appspot.com/o/customers%2Fwarranty%2Fscaled_c83e70ff-d071-4948-a90c-1f2accb71b2a710872071388873253.jpg?alt=media&token=7f1536a0-737c-409d-bd29-ae360b7cc8f9)
+
+If you need more information, feel free to ask!
+''';
   @override
   void onInit() {
     // TODO: implement onInit
